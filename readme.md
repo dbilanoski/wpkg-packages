@@ -84,5 +84,5 @@ Always use debugging to check the procedural execution of your setup.
 
 ## ToDo
 - [x] Initial draft, readme file
-- [X] Templates for MSI and EXE both with and without IP validation
-- [] Revise existing packages
+- [x] Templates for MSI and EXE both with and without IP validation
+- [ ] Revise existing packages

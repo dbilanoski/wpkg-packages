@@ -1,42 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<packages:packages
-        xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+<packages:packages xmlns:packages="http://www.wpkg.org/packages"
+	xmlns:wpkg="http://www.wpkg.org/wpkg"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd">
 
-    <package id='your-package-id'
-		name='Name Of The Software'
-		revision="%SYS_VERSION%"
-		priority='30'
+	<package id='your-package-id' 
+		name='Name Of The Software' 
+		revision="%SYS_VERSION%" 
+		priority='30' 
 		reboot='false' >
 
 		<!-- NOTES 
 		* Check available MSI switches by CMD, then executing msiexec /?
 			* this will show all available switches so you can plan your installation and deinstallation
 		-->
-	 
-        <!-- VARIABLES -->	
+
+		<!-- VARIABLES -->
 		<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
-        <variable name="PKG_CODE" value="{application-pd-code}" />
-    
-        <!-- VALIDATION (if software is already installed) -->	
+		<variable name="PKG_CODE" value="{application-pd-code}" />
+
+		<!-- VALIDATION (if software is already installed) -->
 		<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
-	
-		<!-- INSTALLATION PROCEDURE -->	
-        <install cmd="msiexec /i /switches %SOFTWARE%\application-folder\application-name.msi" />
 
-		<!-- UPGRADE PROCEDURE -->	
-        <!-- Check if your software handles upgrade without manual uninstallation. If not, uncomment remove inclusion below. -->
-        <upgrade include="remove" />
-        <upgrade include="install" />
+		<!-- INSTALLATION PROCEDURE -->
+		<install cmd="msiexec /i /switches %SOFTWARE%\application-folder\application-name.msi" />
 
-		<!-- DOWNGRADE PROCEDURE -->	
+		<!-- UPGRADE PROCEDURE -->
+		<!-- Check if your software handles upgrade without manual uninstallation. If not, uncomment remove inclusion below. -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE PROCEDURE -->
 		<downgrade include="remove" />
-        <downgrade include="install" />
+		<downgrade include="install" />
 
-		<!-- UNINSTALL PROCEDURE -->	
+		<!-- UNINSTALL PROCEDURE -->
 		<remove cmd='msiexec /qn /X %PKG_CODE%' >
-	
-	</package>
 
-</packages:packages>
+		</package>
+
+	</packages:packages>
