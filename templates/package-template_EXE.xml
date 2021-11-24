@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+        xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+    <package id='your-package-id'
+		name='Name Of The Software'
+		revision="%SYS_VERSION%"
+		priority='30'
+		reboot='false' >
+	 
+	 	<!-- NOTES 
+		* Check available exe switches by opening the program folder in CMD, then executing .exe installer with /? switch (eg.app.exe /?)
+			* this will show all available switches so you can plan your installation and deinstallation
+
+		* If not practical to use the installer as a means of deinstallation, try options from below:
+			* If application has a standalone uninstaller with fixed position, use that
+			* You can use WMIC module by calling
+				* wmic product where name ="<PROGRAM NAME HERE>" call uninstall /nointeractive or
+				* wmic product where "name like '<PROGRAM NAME HERE>%%'" call uninstall
+				* folder might need to be deleted manually (rd /s /q C:\Program Files\<PROGRAM FOLDER NAME HERE>)
+
+				* To get program name, open CMD then execute following command and find your application name: wmic product get name 
+		 -->
+
+        <!-- VARIABLES -->	
+		<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
+        <variable name="PKG_INSWITCHES" value="/silent /norestart /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch" />
+    
+        <!-- VALIDATION (if software is already installed) -->	
+		<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
+	
+		<!-- INSTALLATION PROCEDURE -->	
+        <install cmd="%SOFTWARE%\application-folder\application-name.exe %PKG_INSWITCHES%" />
+
+		<!-- UPGRADE PROCEDURE -->	
+        <!-- Check if your software handles upgrade without manual uninstallation. If not, uncomment remove inclusion below. -->
+        <upgrade include="remove" />
+        <upgrade include="install" />
+
+		<!-- DOWNGRADE PROCEDURE -->	
+		<downgrade include="remove" />
+        <downgrade include="install" />
+
+		<!-- UNINSTALL PROCEDURE -->	
+		<remove cmd="%SOFTWARE%\application-folder\application-name.exe /uninstall /silent /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch" >
+	
+	</package>
+
+</packages:packages>

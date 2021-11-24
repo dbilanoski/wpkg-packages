@@ -33,7 +33,7 @@ Some packages will have custom installation logic for various reasons - pay atte
 
 * PKG_CODE - uninstall string of an msi package (if used)
 * DL_LINK (1..9) - Download links (if used)
-* INS_SWITCHES - Installation switches (if used)
+* PKG_INSWITCHES - Installation switches (if used)
 
 #### Revision
 SYS_VERSION variable is used as a reversion. This way, change in the software version variable triggers the appropriate installation action.
@@ -58,7 +58,8 @@ Always have your priorities sorted in the desired sequnce to achive order which 
 
 * [WPKG Wiki page](https://wpkg.org/Main_Page)
 * [Good XML Validator](https://www.liquid-technologies.com/online-xml-validator)
-* [About REGEX Syntax](https://www.liquid-technologies.com/online-xml-validator)
+* [About REGEX Syntax](https://docs.microsoft.com/en-us/previous-versions/1400241x(v=vs.100)?redirectedfrom=MSDN)
+* [About REGEX Syntax 2](https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference?redirectedfrom=MSDN)
 
 ## Help
 
@@ -80,5 +81,5 @@ Always use debugging to check the procedural execution of your setup.
 
 ## ToDo
 - [x] Initial draft, readme file
-- [] Templates for MSI and EXE both with and without IP validation
+- [X] Templates for MSI and EXE both with and without IP validation
 - [] Revise existing packages

@@ -13,48 +13,18 @@
 		<!-- NOTES 
 		* Check available MSI switches by CMD, then executing msiexec /?
 			* this will show all available switches so you can plan your installation and deinstallation
-
-		* When constructing Regular Expression pattern for your IP addresses range, use good validation tool such as https://regex101.com/
-		 -->
+		-->
 	 
         <!-- VARIABLES -->	
 		<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
-		<variable name="DL_LINK1" value="https://public-repo-link-of-the-application/application.msi" />
         <variable name="PKG_CODE" value="{application-pd-code}" />
-        <variable name="INT_IP_RANGE" value="^10\.191\.([0-1]?[0-9]?[0-9]|20[2-9]|2[1-9][1-9])\.[0-9]+$" />
-        
+    
         <!-- VALIDATION (if software is already installed) -->	
 		<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
-			
-		<!-- DOWNLOAD PROCEDURE -->	
-
-		<!-- If not local network, download from public links -->
-        <download url="%DL_LINK1%" target="dltemp/application-name.msi" timeout="7200">
-			<condition>
-				<check type="logical" condition="not">
-					<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
-				</check>
-			</condition>
-        </download>
-
+	
 		<!-- INSTALLATION PROCEDURE -->	
+        <install cmd="msiexec /i /switches %SOFTWARE%\application-folder\application-name.msi" />
 
-		<!-- If VPN, install from downloaded files in %temp% -->
-        <install cmd="msiexec /i /switches %TEMP%\dltemp\application-name.msi">
-            <condition>
-				<check type="logical" condition="not">
-					<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
-				</check>
-			</condition>>
-        </install>
-
-		<!-- If not RAVPN, install from local file server -->
-		<install cmd="msiexec /i /switches %SOFTWARE%\application-folder\application-name.msi">
-            <condition>
-				<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
-            </condition>
-        </install>
-        
 		<!-- UPGRADE PROCEDURE -->	
         <!-- Check if your software handles upgrade without manual uninstallation. If not, uncomment remove inclusion below. -->
         <upgrade include="remove" />
