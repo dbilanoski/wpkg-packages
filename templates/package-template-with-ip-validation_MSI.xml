@@ -20,31 +20,24 @@
 
 			<!-- VARIABLES -->
 			<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
-			<variable name="DL_LINK1" value="https://public-repo-link-of-the-application/application.msi" />
-			<variable name="PKG_CODE" value="{application-pd-code}" />
+			<variable name="UNINST_STRING" value="{application-pd-code}" />
 			<variable name="INT_IP_RANGE" value="^10\.191\.([0-1]?[0-9]?[0-9]|20[2-9]|2[1-9][1-9])\.[0-9]+$" />
+			<variable name="DL_LINK1" value="https://public-repo-link-of-the-application/application.msi" />
+			<variable name="TARG_STRING1" value="application-name.msi" />
 
 			<!-- VALIDATION (if software is already installed) -->
 			<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
 
-			<!-- DOWNLOAD PROCEDURE -->
-			<!-- If not local network, download from public links -->
-			<download url="%DL_LINK1%" target="dltemp/application-name.msi" timeout="7200">
-				<condition>
-					<check type="logical" condition="not">
-						<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
-					</check>
-				</condition>
-			</download>
-
 			<!-- INSTALLATION PROCEDURE -->
-			<!-- If VPN, install from downloaded files in %temp% -->
-			<install cmd="msiexec /i /switches %TEMP%\dltemp\application-name.msi">
-				<condition>
-					<check type="logical" condition="not">
-						<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
-					</check>
-				</condition>
+			<!-- If not local network, download from public links and install from downloaded files -->
+			<install cmd="msiexec /i /switches %TEMP%\%TARG_STRING1%">
+				<download url="%DL_LINK1%" target="%TARG_STRIN12%" timeout="7200">
+					<condition>
+						<check type="logical" condition="not">
+							<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
+						</check>
+					</condition>
+				</download>
 			</install>
 
 			<!-- If not RAVPN, install from local file server -->
@@ -64,7 +57,7 @@
 			<downgrade include="install" />
 
 			<!-- UNINSTALL PROCEDURE -->
-			<remove cmd='msiexec /qn /X %PKG_CODE%' >
+			<remove cmd='msiexec /qn /X %UNINST_STRING%' >
 
 			</package>
 		</packages>

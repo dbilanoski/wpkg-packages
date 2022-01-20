@@ -31,8 +31,11 @@ Some packages will have custom installation logic for various reasons - pay atte
     ```
     * Used as a revision number
 
-* PKG_CODE - uninstall string of an msi package (if used)
+* UNINST_STRING - uninstall string of an msi package (if used)
 * DL_LINK (1..9) - Download links (if used)
+* TARG_STRING1 - name of the files we are downloading from DL_LINK(1-9)
+  * These are by default stored in %TEMP% and lated deleted
+  * You can add folders to the path (eg. TARG_STRING1 value ="appname\app.exe", this will download file to %TEMP%\appname\app.exe)
 * PKG_INSWITCHES - Installation switches (if used)
 
 #### Revision
