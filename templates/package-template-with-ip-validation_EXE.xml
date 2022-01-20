@@ -38,18 +38,14 @@
 		<!-- VALIDATION (if software is already installed) -->
 		<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
 
-		<!-- DOWNLOAD PROCEDURE -->
-
-		<!-- If not local network, download from public links -->
-		<download url="%DL_LINK1%" target="dltemp/application-name.exe" timeout="7200">
-			<condition>
-				<check type="logical" condition="not">
-					<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
-				</check>
-			</condition>
-		</download>
-
 		<!-- INSTALLATION PROCEDURE -->
+
+		<!-- If not RAVPN, install from local file server -->
+		<install cmd="%SOFTWARE%\application-folder\application-name.exe %PKG_INSWITCHES%">
+			<condition>
+				<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
+			</condition>
+		</install>
 
 		<!-- If VPN, install from downloaded files in %temp% -->
 		<install cmd="%TEMP%\%TARG_STRING1% %PKG_INSWITCHES%">
@@ -60,13 +56,6 @@
 					</check>
 				</condition>
 			</download>
-		</install>
-
-		<!-- If not RAVPN, install from local file server -->
-		<install cmd="%SOFTWARE%\application-folder\application-name.exe %PKG_INSWITCHES%">
-			<condition>
-				<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
-			</condition>
 		</install>
 
 		<!-- UPGRADE PROCEDURE -->

@@ -29,6 +29,14 @@
 			<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
 
 			<!-- INSTALLATION PROCEDURE -->
+
+			<!-- If not RAVPN, install from local file server -->
+			<install cmd="msiexec /i /switches %SOFTWARE%\application-folder\application-name.msi">
+				<condition>
+					<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
+				</condition>
+			</install>
+
 			<!-- If not local network, download from public links and install from downloaded files -->
 			<install cmd="msiexec /i /switches %TEMP%\%TARG_STRING1%">
 				<download url="%DL_LINK1%" target="%TARG_STRIN12%" timeout="7200">
@@ -38,13 +46,6 @@
 						</check>
 					</condition>
 				</download>
-			</install>
-
-			<!-- If not RAVPN, install from local file server -->
-			<install cmd="msiexec /i /switches %SOFTWARE%\application-folder\application-name.msi">
-				<condition>
-					<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
-				</condition>
 			</install>
 
 			<!-- UPGRADE PROCEDURE -->
