@@ -39,7 +39,7 @@
 
 			<!-- If not local network, download from public links and install from downloaded files -->
 			<install cmd="msiexec /i /switches %TEMP%\%TARG_STRING1%">
-				<download url="%DL_LINK1%" target="%TARG_STRIN12%" timeout="7200">
+				<download url="%DL_LINK1%" target="%TARG_STRING1%" timeout="7200">
 					<condition>
 						<check type="logical" condition="not">
 							<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
