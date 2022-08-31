@@ -26,13 +26,13 @@
 
 		<!-- VARIABLES -->
 		<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
-		<variable name="INST_SWITCHES" value="/silent /norestart /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch" />
+		<variable name="INSTALL_ARGS" value="/silent /norestart /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch" />
 
 		<!-- VALIDATION (if software is already installed) -->
 		<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
 
 		<!-- INSTALLATION PROCEDURE -->
-		<install cmd="%SOFTWARE%\application-folder\application-name.exe %INST_SWITCHES%" />
+		<install cmd="%SOFTWARE%\application-folder\application-name.exe %INSTALL_ARGS%" />
 
 		<!-- UPGRADE PROCEDURE -->
 		<!-- Check if your software handles upgrade without manual uninstallation. If not, uncomment remove inclusion below. -->

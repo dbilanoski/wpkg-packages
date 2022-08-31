@@ -28,11 +28,11 @@
 
 		<!-- VARIABLES -->
 		<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
-		<variable name="UNINST_STRING" value="{application-pd-code}" />
-		<variable name="INT_IP_RANGE" value="^10\.191\.([0-1]?[0-9]?[0-9]|20[2-9]|2[1-9][1-9])\.[0-9]+$" />
-		<variable name="DL_LINK1" value="https://public-repo-link-of-the-application/application-name.exe" />
-		<variable name="TARG_STRING1" value="application-name.exe" />
-		<variable name="INST_SWITCHES" value="/silent /norestart /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch" />
+		<variable name="UNINSTALL_STRING" value="{application-pd-code}" />
+		<variable name="INTERNAL_IP_RANGE" value="^10\.191\.([0-1]?[0-9]?[0-9]|20[2-9]|2[1-9][1-9])\.[0-9]+$" />
+		<variable name="DL_SOURCE_1" value="https://public-repo-link-of-the-application/application-name.exe" />
+		<variable name="DL_TARGET_1" value="application-name.exe" />
+		<variable name="INSTALL_ARGS" value="/silent /norestart /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch" />
 
 
 		<!-- VALIDATION (if software is already installed) -->
@@ -41,18 +41,18 @@
 		<!-- INSTALLATION PROCEDURE -->
 
 		<!-- If not RAVPN, install from local file server -->
-		<install cmd="%SOFTWARE%\application-folder\application-name.exe %INST_SWITCHES%">
+		<install cmd="%SOFTWARE%\application-folder\application-name.exe %INSTALL_ARGS%">
 			<condition>
-				<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
+				<check type="host" condition="ipaddresses" value="%INTERNAL_IP_RANGE%" />
 			</condition>
 		</install>
 
 		<!-- If VPN, install from downloaded files in %temp% -->
-		<install cmd="%TEMP%\%TARG_STRING1% %INST_SWITCHES%">
-			<download url="%DL_LINK1%" target="%TARG_STRING1%" timeout="7200">
+		<install cmd="%TEMP%\%DL_TARGET_1% %INSTALL_ARGS%">
+			<download url="%DL_SOURCE_1%" target="%DL_TARGET_1%" timeout="7200">
 				<condition>
 					<check type="logical" condition="not">
-						<check type="host" condition="ipaddresses" value="%INT_IP_RANGE%" />
+						<check type="host" condition="ipaddresses" value="%INTERNAL_IP_RANGE%" />
 					</check>
 				</condition>
 			</download>

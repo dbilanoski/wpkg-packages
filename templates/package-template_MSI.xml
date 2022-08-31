@@ -17,7 +17,7 @@
 
 		<!-- VARIABLES -->
 		<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
-		<variable name="UNINST_STRING" value="{application-pd-code}" />
+		<variable name="UNINSTALL_STRING" value="{application-pd-code}" />
 
 		<!-- VALIDATION (if software is already installed) -->
 		<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
@@ -35,7 +35,7 @@
 		<downgrade include="install" />
 
 		<!-- UNINSTALL PROCEDURE -->
-		<remove cmd='msiexec /qn /X %UNINST_STRING%' >
+		<remove cmd='msiexec /qn /X %UNINSTALL_STRING%' >
 
 		</package>
 
