@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+  xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+  <package 
+    id='7zip' 
+    name='7-Zip' 
+    revision="%SYS_VERSION%"
+    reboot="false"
+    priority="1">
+
+    <variable name="PKG_VERSION" value="2201" />
+    <variable name="SYS_VERSION" value="22.01" />
+    <variable name="INSTALL_ARGS" value="/i /qn /norestart;" />
+
+    <check type="uninstall" condition="exists" path="7-Zip %SYS_VERSION% (x64)" />
+
+    <install cmd='msiexec %INSTALL_ARGS% %SOFTWARE%\7zip\7z%PKG_VERSION%-x64.msi' architecture="x64" />
+		
+		<!-- 
+			This fixes file associations in Windows.
+			Many ways of doing it, see here: https://wpkg.org/7-Zip		
+		-->
+    <install cmd="%COMSPEC% /C regedit /s %SOFTWARE%\7zip\7zipext.reg">
+      <exit code="any"/>
+    </install>
+
+    <upgrade include="remove" />
+    <upgrade include="install" />
+
+    <downgrade include="remove" />
+    <downgrade include="install" />
+
+    <remove cmd='wmic product where "name like &apos;7-Zip%%&apos;" call uninstall' /> 
+
+  </package>
+
+</packages:packages>

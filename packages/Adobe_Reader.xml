@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+  xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id="adobe-reader"
+		name="Adobe Reader DC"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="20">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="2200220191" />
+		<variable name="SYS_VERSION" value="22.002.20191" />
+		<variable name="UNINSTALL_STRING" value="{AC76BA86-7AD7-1033-7B44-AC0F074E4100}" />
+		<variable name="INSTALL_ARGS" value="/sAll /rs /msi EULA_ACCEPT=YES DISABLEDESKTOPSHORTCUT=1" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Adobe Acrobat Reader .*" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='"%SOFTWARE%\AdobeReader\AcroRdrDC%PKG_VERSION%_en_US.exe" %INSTALL_ARGS%' />
+
+		<!-- Setting applicaiton features -->
+		<install cmd='%COMSPEC% /c REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown" /f /v "bUsageMeasurement" /t REG_DWORD /d 00000000' />
+		<install cmd='%COMSPEC% /c REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown" /f /v "bUpdater" /t REG_DWORD /d 00000000' />
+		<install cmd='%COMSPEC% /c REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown\cServices" /f /v "bUpdater" /t REG_DWORD /d 00000000' />
+		<install cmd='%COMSPEC% /C IF EXIST "C:\Users\Public\Desktop\Acrobat Reader DC.lnk" DEL /Q "C:\Users\Public\Desktop\Acrobat Reader DC.lnk"' />
+
+		<!-- UPGRADE -->
+		<!-- 
+		If you want to apply an upgrade package (.mps) to existing installation, extract the AcroRdrDCUpd_version.msp from the exe installer, add it to the repo and use the line below.
+	
+		<upgrade cmd='msiexec /qn /update "%SOFTWARE%\AdobeReader\AcroRdrDCUpd_%PKG_VERSION%.msp"' />
+		<upgrade cmd='%COMSPEC% /c REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown" /f /v "bUsageMeasurement" /t REG_DWORD /d 00000000' />
+		<upgrade cmd='%COMSPEC% /c REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown" /f /v "bUpdater" /t REG_DWORD /d 00000000' />
+		<upgrade cmd='%COMSPEC% /c REG ADD "HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Adobe\Acrobat Reader\DC\FeatureLockDown\cServices" /f /v "bUpdater" /t REG_DWORD /d 00000000' />
+		<upgrade cmd='%COMSPEC% /C IF EXIST "C:\Users\Public\Desktop\Acrobat Reader DC.lnk" DEL /Q "C:\Users\Public\Desktop\Acrobat Reader DC.lnk"' /> 
+
+		For a clean upgrade (faster), do removal on upgrading by adding line below:
+		<upgrade include="remove" />
+		-->
+
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='msiexec /qn /X %UNINSTALL_STRING%' >
+			<exit code="0" />
+		</remove>
+
+	</package>
+
+</packages:packages>

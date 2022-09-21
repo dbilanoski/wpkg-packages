@@ -44,7 +44,7 @@
 		<downgrade include="install" />
 
 		<!-- UNINSTALL PROCEDURE -->
-		<remove cmd="%SOFTWARE%\application-folder\application-name.exe /uninstall /silent /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch">
+		<remove cmd="%SOFTWARE%\application-folder\application-name.exe /uninstall /silent /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch" />
 
 		</package>
 

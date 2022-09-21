@@ -68,7 +68,7 @@
 		<downgrade include="install" />
 
 		<!-- UNINSTALL PROCEDURE -->
-		<remove cmd='wmic product where "name like "program-name%%"" call uninstall' >
+		<remove cmd='wmic product where "name like "program-name%%"" call uninstall' />
 
 		</package>
 

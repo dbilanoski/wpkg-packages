@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="audacity"
+		name="Audacity"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="3.1.3" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+		<variable name="INSTALL_ARGS" value="/VERYSILENT /NORESTART /MERGETASKS=!desktopicon" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Audacity %SYS_VERSION%" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='%SOFTWARE%\Audacity\audacity-win-%SYS_VERSION%-64bit.exe %INSTALL_ARGS%' />
+		<!-- Delete Desktop shortcut if already exists -->
+		<install cmd='%COMSPEC% /C IF EXIST C:\Users\Public\Desktop\Audacity.lnk DEL C:\Users\Public\Desktop\Audacity.lnk' />
+		
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%PROGRAMFILES%\Audacity\unins000.exe /VERYSILENT /NORESTART' />
+
+	</package>
+
+</packages:packages>

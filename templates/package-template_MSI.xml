@@ -35,8 +35,8 @@
 		<downgrade include="install" />
 
 		<!-- UNINSTALL PROCEDURE -->
-		<remove cmd='msiexec /qn /X %UNINSTALL_STRING%' >
+		<remove cmd='msiexec /qn /X %UNINSTALL_STRING%' />
 
-		</package>
+	</package>
 
-	</packages:packages>
+</packages:packages>

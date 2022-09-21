@@ -41,3 +41,6 @@ $RECYCLE.BIN/
 
 ### Code ###
 .vscode/
+
+### Custom additions ###
+**/packages-prod
