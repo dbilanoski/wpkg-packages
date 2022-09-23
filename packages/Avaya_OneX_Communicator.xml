@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+  xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="avaya-oneX-communicator"
+		name="Avaya One-X Communicator"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="6.2.14.4" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+    <variable name="UNINSTALL_STRING" value="{E6C75F1C-19A6-4159-B86E-8A8D171B7D7B}" />
+		<variable name="INSTALL_ARGS" value="/silent /ENABLEVIDEO=0 /SIGNALPROTOCOL=1 /ISFeatureInstall=OneXC /ENABLECUSTOMIMPROVIDERS=1" />
+
+		<variable architecture="x86" name="PROGFILES" value="%PROGRAMFILES%" />
+		<variable architecture="x64" name="PROGFILES" value="%PROGRAMFILES(X86)%" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Avaya one-X® Communicator" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='"%SOFTWARE%\OneX_communicator\Avaya one-X Communicator Suite.exe" %INSTALL_ARGS%' />
+		<!-- Preconfigure the app by copying the configuration in advance -->
+		<install cmd='%COMPSPEC% /c xcopy "%SOFTWARE%\OneX_communicator\config" "%PROGFILES%\Avaya\Avaya one-X Communicator" /r /y /e /i /s /c' />
+		
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+		
+		<!-- DEINSTALLATION -->
+		<remove cmd='msiexec /qn /X %UNINSTALL_STRING%' />
+		
+	</package>
+
+</packages:packages>

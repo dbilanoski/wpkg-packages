@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id='avaya-oneX-agent'
+		name='Avaya One-X Agent'
+		revision="%SYS_VERSION%"
+		priority='30'
+		reboot='false' >
+		
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="2.5.58020.0" />
+		<variable name="SYS_VERSION" value="2.5.8" />
+		<variable name="UNINSTALL_STRING" value="{58D3DB71-90EA-43DE-A89F-5FF4A3D88713}" /> 
+		<variable name="INSTALL_ARGS" value='/qn /lv*x "C:\OneXagent.log" ENABLECLICKTODIALIE="1" ENABLECLICKTODIALFF="1"' />
+
+		<!-- VALIDATION -->
+		<check type='uninstall' condition='exists' path='Avaya one-X Agent - %SYS_VERSION%' />
+
+		<!-- INSTALLATION -->		
+		<install cmd='msiexec /i "%SOFTWARE%\OneX_Agent\OnexAgentSetup%PKG_VERSION%\application\etc\OneXAgentWIXSetup.msdb" %INSTALL_ARGS%' />
+
+		<!-- If you need to delete existing configuration on machine, this can be used -->
+		<!-- <install cmd='%comspec% START "Delete" FOR /D %%G IN (C:\Users\*) DO DEL /Q "%%G\AppData\Roaming\Avaya\one-X Agent\2.5\Profiles\default\Settings.xml"' architecture="x64" /> -->
+		
+		<!-- Copy settings (If you need to preconfigure it) -->
+		<install cmd='%COMSPEC% /C xcopy %SOFTWARE%\OneX_Agent\Settings.xml "%PROGRAMFILES%\Avaya\Avaya one-X Agent\Settings.xml" /r /y /e /i /s /c'/>
+		
+		<!-- UPGRADE -->	
+		<upgrade include="install" />
+		
+		<!-- DOWNGRADE -->	
+		<downgrade include="remove" />
+		<downgrade include="upgrade" />
+
+		<!-- DEINSTALLATION -->	
+		<remove cmd='msiexec /qn /X %UNINSTALL_STRING%' />
+
+	</package>
+
+</packages:packages>
