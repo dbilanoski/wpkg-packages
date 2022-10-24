@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+        xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+    <package
+        id="bitlocker"
+        name="BitLocker Activator"
+        revision="%SYS_VERSION%"
+        reboot="false"
+        priority="2">
+
+        <!-- 
+            This package will execute activation script here: \\shrosvfile02\wpkg$\software\_Scripts\BitLocker\activate_bitlocker_wpkg.bat
+
+            Script logic:
+	            * Script will check if Global_gpComputerConfiguration_Bitlocker is applied to the machine
+		            * If not, it will exit with an error [201]
+		            * If yes, script will check if bitlocker is already active on the system
+			            * If yes, script will exit with success [200]
+			            * If no, script will start the activation process
+				            * If activation returns an error, scripts exits with an error [201]
+				            * If activation is successfull, script with exit with success [200]
+
+            WPKG package logic:
+                * If %ACTIVATION_SCRIPT% is successfull, exit code 200 is returned
+                * If exit code 200 is returned on %VALIDATION_SCRIPT%, package will write a file with package version number to C:\Program Files\BitLocker-validation_%SYS_VERSION%.txt
+                * On validation checks, if file C:\Program Files\BitLocker-validation_%SYS_VERSION%.txt is found, package is already installed [skips]
+                * On removal\deinstallation, BitLockler is deactivated and C:\Program Files\BitLocker-validation_%SYS_VERSION%.txt validation file is deleted
+        -->
+        
+        <!-- CONFIGURATION VARIABLES -->
+    	<variable name="SYS_VERSION" value="1.0.0" />
+        <variable name ="ACTIVATION_SCRIPT" value="\\shrosvfile02\wpkg$\software\_Scripts\BitLocker\activate_bitlocker_wpkg.bat" />
+        <variable name ="VALIDATION_SCRIPT" value="\\shrosvfile02\wpkg$\software\_Scripts\BitLocker\bitlocker_status_checker.bat" /> 
+
+        <!-- VALIDATION -->   
+        <check type="file" condition="exists" path="C:\Program Files\BitLocker-validation_%SYS_VERSION%.txt" />
+
+        <!-- INSTALLATION -->
+        <install cmd='%COMSPEC% /C %ACTIVATION_SCRIPT%'>
+            <exit code="200" />
+        </install>
+
+        <!-- Write custom validation only in case BitLocker was activated (validation script, returns 200 in case it went) -->
+        <install cmd='%COMSPEC% /C echo DO NOT DELETE - BITLOCKER ACTIVATOR VALIDATION > "C:\Program Files\BitLocker-validation_%SYS_VERSION%.txt"'>
+            <condition>
+                <check type="execute" path="%VALIDATION_SCRIPT%" condition="exitcodeequalto" value="200" />
+            </condition>
+        </install>
+
+        <!-- UPGRADE -->
+        <upgrade include="remove" />
+        <upgrade include="install" />
+
+        <!-- DOWNGRADE -->
+        <upgrade include="remove" />
+        <upgrade include="install" />
+
+        <!-- DEINSTALLATION -->
+        <!-- Deactivate BitLocker -->
+        <remove cmd='%COMSPEC% /C manage-bde -off c:' />
+        
+        <!-- Delete custom validation -->
+        <remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\BitLocker-validation_*.txt"' />
+		
+	</package>
+
+</packages:packages>
