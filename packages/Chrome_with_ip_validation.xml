@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+        xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+  <package 
+        name="Google Chrome"
+        revision="%SYS_VERSION%"
+        reboot="false"
+        priority="30">
+
+        <!-- 
+            This package relies on ip address validation script here: https://github.com/dbilanoski/wpkg-packages/blob/main/assets/wpkg_ip_validator.ps1
+
+            Script logic:
+ 	            * Script will check if you current IP address is in the range of you internal supernet
+                    * if yes, it will exit with 500 (means user is on internal network)
+                    * if no, it will exit with 501 (means users is not on internal network)
+
+            WPKG package logic:
+                * If user is on internal network, package will install from local file server (validation script returned 500)
+                * If user is on RAVPN, package will be downloaded from %DL_LINK_1% and installed (validation script returned 501)
+            
+            NOTE: you might get unsuccessfull install for on-site users as the sofware will install from local server (exit 500) but then try to install from download location anyways
+                * reason for that is that the <condition> tag only affects the direct parent tag (<download>), not the whole nested stack
+                * because of that, download won't happen in case of exit 501, but install will and will exit as there is no downloaded file in %DL_TARGET_1%
+                * Just have users reapeat the wpkg-gp update/sync again. Sofware will already be installed and wpkg will write it as "already installed"
+        -->
+
+        <!-- CONFIGURATION VARIABLES -->
+        <variable name="SYS_VERSION" value="102.0.5005.115" />
+        <variable name="UNINSTALL_STRING" value="{B24F0A95-6C38-3CA4-AFC8-7BDD38B8C51D}" />
+		<variable name="DL_SOURCE_1" value="your-publicly-available-download-link" />
+		<variable name="DL_TARGET_1" value="googlechromestandaloneenterprise_%SYS_VERSION%.msi" />
+
+        <!-- VALIDATION -->
+	    <check type="uninstall" condition="versiongreaterorequal" path="Google Chrome" value="%SYS_VERSION%" />
+ 
+        <!-- INSTALLATION -->
+		<!-- If on internal network, install from local file server -->
+		<install cmd='msiexec /qn /norestart /i "%SOFTWARE%\Chrome\ggooglechromestandaloneenterprise64.msi"'>
+			<condition>
+				<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %SOFTWARE%\scripts\ip_validator.ps1" condition="exitcodeequalto" value="500" />
+			</condition>
+		</install>
+
+        <!-- Delete shortcuts in Public folder -->
+        <install cmd='%comspec% IF EXIST "C:\Users\Public\Desktop\Google Chrome.lnk" DEL /q "C:\Users\Public\Desktop\Google Chrome.lnk"' />
+
+        <!-- If not local network, download from public link and install -->
+		<install cmd='msiexec /qn /norestart /i %TEMP%\%DL_TARGET_1%'>
+			<download url="%DL_SOURCE_1%" target="%DL_TARGET_1%" timeout="7200">
+				<condition>
+ 					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %SOFTWARE%\scripts\ip_validator.ps1" condition="exitcodeequalto" value="501" />
+				</condition>
+			</download>
+		</install>
+
+         <!-- Delete shortcuts in Public folder -->
+        <install cmd='%comspec% IF EXIST "C:\Users\Public\Desktop\Google Chrome.lnk" DEL /q "C:\Users\Public\Desktop\Google Chrome.lnk"' />
+
+        <!-- UPGRADE -->
+        <upgrade cmd="taskkill /F /IM chrome.exe">
+			<exit code="any" />
+		</upgrade>
+
+        <upgrade include="install" />
+ 
+         <!-- DOWNGRADE -->
+        <downgrade include="remove" />
+        <downgrade include="upgrade" />
+
+        <!-- DEINSTALLATION -->
+        <remove cmd="taskkill /F /IM chrome.exe">
+			<exit code="any" />
+		</remove>
+
+        <remove cmd='wmic product where name="Google Chrome" call uninstall' />
+        
+        <remove cmd='REG DELETE HKLM\SOFTWARE\Policies\Google\Update /v AutoUpdateCheckPeriodMinutes /f' >
+            <exit code="any" />
+        </remove>
+ 
+    </package>
+
+</packages:packages>

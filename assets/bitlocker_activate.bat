@@ -10,7 +10,7 @@ if %errorlevel% == 0 (
     GOTO startBitlocker
 ) else (
     echo %COMPUTERNAME% exited with error %ERRORLEVEL%. GP %GPO% not found on computer - please move computer to BitLocker OU. >> C:\biLocker_log.txt
-    Exit /B 201
+    Exit /B 501
 )
 
 :StartBitlocker
@@ -41,9 +41,9 @@ GOTO EncryptionCompleted
 :ErrorHandler
 
 echo %COMPUTERNAME% exited with error %ERRORLEVEL%. Please check your System, TPM and BIOS settings. >> C:\biLocker_log.txt
-Exit /B 201
+Exit /B 501
 
 :EncryptionCompleted
 
 echo %COMPUTERNAME% - Operation successfull >> C:\biLocker_log.txt
-Exit /B 200
+Exit /B 500

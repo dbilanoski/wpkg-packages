@@ -13,7 +13,7 @@ for /F "tokens=3 delims= " %%A in ('manage-bde -status %systemdrive% ^| findstr 
     )
 
 :EncryptionActive
-exit /B 200
+exit /B 500
 
 :EncryptionNotActive
-exit /B 201
+exit /B 501
