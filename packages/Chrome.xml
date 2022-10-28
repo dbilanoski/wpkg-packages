@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package 
+		name="Google Chrome"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="102.0.5005.115" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Google Chrome" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<!-- FIX FILENAME from ggogle to google once you a ready to deploy -->
+		<install cmd='msiexec /qn /norestart /i "%SOFTWARE%\Chrome\ggooglechromestandaloneenterprise64.msi"' />
+
+		<!-- Delete shortcuts in Public folder -->
+		<install cmd='%comspec% IF EXIST "C:\Users\Public\Desktop\Google Chrome.lnk" DEL /q "C:\Users\Public\Desktop\Google Chrome.lnk"' />
+
+		<!-- UPGRADE -->
+		<upgrade cmd="taskkill /F /IM chrome.exe">
+			<exit code="any" />
+		</upgrade>
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="upgrade" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd="taskkill /F /IM chrome.exe">
+			<exit code="any" />
+		</remove>
+
+		<remove cmd='wmic product where name="Google Chrome" call uninstall' />
+
+	</package>
+
+</packages:packages>

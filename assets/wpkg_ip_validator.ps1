@@ -4,7 +4,7 @@
 # Date: 17/05/2022
 
 # -- Notes --
-# This uses regex patterning to catch desired on-site ip address while avoiding RAVPNS.
+# This uses regex patterning to catch desired on-site ip address while avoiding RAVPNS (Cisco AnyConnect).
 # Please adjust $pattern variable to match your onsite supernetwork
 # Exit code 500 means machine is onsite, 501 means its not
 
