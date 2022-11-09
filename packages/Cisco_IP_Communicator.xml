@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="cisco-ip-communicator"
+		name="Cisco IP Communicator"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="20">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="8.6.6.0" />
+    <variable name="SYS_VERSION" value="%PKG_VERSION%" />
+    <variable name="UNINSTALL_STRING" value="{021FEE36-2E91-447C-BB3E-2A0659FFB5B0}" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Cisco IP Communicator" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		
+    <!-- 
+    	Notes
+        * FREEFORMDEVICENAME is needed for enabling manual change of the extension afterwards
+        * We are setting it as 'temp' as the user will configure it accorting to which extensions he gets upon usage
+				* Update TFTP1 and 2 to reflect servers used in your network
+				* HAVE IN MIND THAT BY DEFAULT ADMINISTRATIVE ACCESS IS NEEDED FOR CONFIGURATION
+					- to have non-admin users with rights to edit settings, take a look at Cisco_IP_Communicator-Enable_Priviledges package and associated ps1 script.
+    -->
+
+	  <install cmd='msiexec /i "%SOFTWARE%\Cisco_IP_Comunicator\CiscoIPCommunicatorSetup.msi" /qb FREEFORMDEVICENAME=temp TFTP1=192.168.1.1 TFTP2=192.168.1.2' />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALL -->
+    <remove cmd='msiexec /qn /X%UNINSTALL_STRING%'>
+      <exit code="any" />
+    </remove>
+        
+	</package>
+</packages:packages>

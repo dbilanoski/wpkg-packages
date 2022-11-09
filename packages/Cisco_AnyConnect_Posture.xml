@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="cisco-anyconnect-posture"
+		name="Cisco Anyconnect ISE Posture Module"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="97">
+		
+		<!--
+			This package is a part of "dowload all first, install what you need later" Cisco AnyConnect deployment suite
+
+	 		Check cisco-anyconnect package for description.
+
+			Script logic:
+				* This depends on the cisco-anyconnect wpkg package
+				* It will check if the Posture component installer is already downloaded, if not it will copy it
+				* Then it installs it from the copied file
+		-->
+
+		<!-- EXPLICIT WPKG DEPENDENCIES -->
+		<depends package-id="cisco-anyconnect" />
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="4.7.04056" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+		<variable name="UNINSTALL_STRING" value="{AD13DB3E-8032-4B96-87C7-FBDD57F557D5}" />
+
+		<!-- VALIDATION --> 
+		<check type="uninstall" condition="versiongreaterorequal" path="Cisco AnyConnect ISE Posture Module" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION --> 
+		<!-- If there is folder already created on user's system, skip creation -->
+		<install cmd='%COMSPEC% /C mkdir C:\Cisco' >
+			<condition>
+				<check type="logical" condition="not">
+					<check type="file" condition="exists" path="C:\Cisco\" />
+				</check>
+			</condition>
+		</install>
+
+		<!-- If there is file already on user's system, skip downloading  -->
+		<install cmd='%COMSPEC% /C XCOPY "%SOFTWARE%\VPN\Anyconnect-win-%SYS_VERSION%-predeploy-k9\Anyconnect-win-%SYS_VERSION%-iseposture-predeploy-k9.msi" "C:\Cisco" /y /e /i /s /c' >
+			<condition>
+				<check type="logical" condition="not">
+					<check type="file" condition="exists" path="C:\Cisco\Anyconnect-win-%SYS_VERSION%-iseposture-predeploy-k9.msi" />
+				</check>
+			</condition>
+		</install>
+
+		<!-- Install from users system  -->
+		<install cmd='msiexec /qn /I "C:\Cisco\Anyconnect-win-%SYS_VERSION%-iseposture-predeploy-k9.msi"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />>
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='msiexec /qn /X%UNINSTALL_STRING%'>
+			<exit code="any" />
+		</remove>
+        
+	</package>
+</packages:packages>

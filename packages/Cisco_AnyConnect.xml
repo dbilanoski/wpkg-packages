@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+	id="cisco-anyconnect"
+	name="Cisco Anyconnect Secure Mobility Client"
+	revision="%SYS_VERSION%"
+	reboot="false"
+	priority="98">
+
+	<!--
+
+		This package is a part of "dowload all first, install what you need later" Cisco AnyConnect deployment suite.
+		Since Cisco AnyConnect is the app providing the remote connection, deployment will consist of first copying installers to each machine on first install.
+		Since Cisco AnyConnect is a stack of multiple components used differently on different projects, we copy all on the first installation but add wpkg packages only of those components needed.
+
+ 		As those components are used in various combinations, we split them in seperate wpkg packages where:
+			* base app (this one) covers downloading of all component installers and installs only base app
+			* each separate component is then added as separate wpkg package where needed and can install the component from installers already present on pc
+
+		This way on first installation each pc gets all installers and installation later is using already present installers locally.
+
+		Script logic:
+			* Download all Cisco AnyConnect installers if those are not present in the system already
+			* Install Mobility Client (base application)
+	-->
+
+	<!-- CONFIGURATION VARIABLES -->
+	<variable name="PKG_VERSION" value="4.7.04056" />
+	<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+	<variable name="UNINSTALL_STRING" value="{3E8909A1-55FD-46C4-8FC0-604313331AA2}" />
+
+	<!-- VALIDATION --> 
+	<check type="uninstall" condition="versiongreaterorequal" path="Cisco AnyConnect Secure Mobility Client" value="%SYS_VERSION%" />
+		
+  <!-- INSTALLATION -->
+	<!-- Create folder C:\Cisco where we will put all installers so we have it handy on each machines locally -->
+	<install cmd='%COMSPEC% /C mkdir C:\Cisco' >
+		<condition>
+			<check type="logical" condition="not">
+				<check type="file" condition="exists" path="C:\Cisco\" />
+			</check>
+		</condition>
+	</install>
+
+	<!-- Download Mobility Client if not already present on machine -->
+	<install cmd='%COMSPEC% /C XCOPY "%SOFTWARE%\VPN\Anyconnect-win-%SYS_VERSION%-predeploy-k9\Anyconnect-win-%SYS_VERSION%-core-vpn-predeploy-k9.msi" "C:\Cisco" /y /e /i /s /c' >
+		<condition>
+			<check type="logical" condition="not">
+				<check type="file" condition="exists" path="C:\Cisco\Anyconnect-win-%SYS_VERSION%-core-vpn-predeploy-k9.msi" />
+			</check>
+		</condition>
+	</install>
+
+	<!-- Download SBL Module if not already present on machine -->
+	<install cmd='%COMSPEC% /C XCOPY "%SOFTWARE%\VPN\Anyconnect-win-%SYS_VERSION%-predeploy-k9\Anyconnect-win-%SYS_VERSION%-gina-predeploy-k9.msi" "C:\Cisco" /y /e /i /s /c' >
+		<condition>
+			<check type="logical" condition="not">
+				<check type="file" condition="exists" path="C:\Cisco\Anyconnect-win-%SYS_VERSION%-gina-predeploy-k9.msi" />
+			</check>
+		</condition>
+	</install>
+
+	<!-- Download Posture Module if not already present on machine -->
+	<install cmd='%COMSPEC% /C XCOPY "%SOFTWARE%\VPN\Anyconnect-win-%SYS_VERSION%-predeploy-k9\Anyconnect-win-%SYS_VERSION%-iseposture-predeploy-k9.msi" "C:\Cisco" /y /e /i /s /c' >
+		<condition>
+			<check type="logical" condition="not">
+				<check type="file" condition="exists" path="C:\Cisco\Anyconnect-win-%SYS_VERSION%-iseposture-predeploy-k9.msi" />
+			</check>
+		</condition>
+	</install>
+
+	<!-- Download NAM Module if not already present on machine -->
+	<install cmd='%COMSPEC% /C XCOPY "%SOFTWARE%\VPN\Anyconnect-win-%SYS_VERSION%-predeploy-k9\Anyconnect-win-%SYS_VERSION%-nam-predeploy-k9.msi" "C:\Cisco" /y /e /i /s /c' >
+		<condition>
+			<check type="logical" condition="not">
+					<check type="file" condition="exists" path="C:\Cisco\Anyconnect-win-%SYS_VERSION%-nam-predeploy-k9.msi" />
+			</check>
+		</condition>
+	</install>
+
+	<!-- Install Mobility Client from users system  -->
+	<install cmd='msiexec /qn /I "C:\Cisco\Anyconnect-win-%SYS_VERSION%-core-vpn-predeploy-k9.msi"' />
+
+	<!-- UPGRADE -->
+	<upgrade include="install" />
+
+	<!-- DOWNGRADE -->
+	<downgrade include="remove" />
+	<downgrade include="install" />
+
+	<!-- DEINSTALLATION -->
+	<remove cmd='msiexec /qn /X%UNINSTALL_STRING%'>
+		<exit code="any" />
+	</remove>
+        
+	</package>
+</packages:packages>

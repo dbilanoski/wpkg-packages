@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="cipc-admin"
+		name="Cisco IP Communicator Priviledges Patch"
+		revision="%sys_version%"
+		reboot="false"
+		priority="5">
+
+		<depends package-id="cisco-ip-communicator" />
+
+				
+		<!--
+					
+			NOTE:
+			This one will provide configuration options to be availalbe for non-administrator users so they can configure the application without admin intervention.
+			Depends on: Cisco IP Communicator 
+			
+			HOW TO USE:
+			1. Put the script from: https://github.com/dbilanoski/wpkg-packages/blob/main/assets/cisco_ipc-enable-user-priviledges.ps1 in your Cisco IP Communicator installation folder
+			2. Execute it after Cisco IP Communicator is installed		
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="sys_version" value="1.0.0" />
+
+		<!-- VALIDATION -->
+		<check type="file" condition="exists" path="C:\Program Files\Cisco_UserPrivileges_Patch%sys_version%.txt" />
+		
+		<!-- INSTALLATION -->
+		<install cmd='%COMSPEC% /C "Powershell.exe -NoProfile -ExecutionPolicy Bypass -File %SOFTWARE%\Cisco_IP_Comunicator\cisco_ipc-enable-user-priviledges.ps1"' />
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - CISCO IP COMMUNICATOR PATCH VALIDATOR > "C:\Program Files\Cisco_UserPrivileges_Patch%sys_version%.txt"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\Cisco_UserPrivileges_*.txt"' />
+	
+	</package>
+	
+</packages:packages>
