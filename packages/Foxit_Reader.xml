@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="foxit-pdf"
+		name="Foxit PDF Reader"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="543.0920" />
+		<variable name="SYS_VERSION" value="5.4.3.920" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Foxit Reader" value="%SYS_VERSION%" />
+		
+		<!-- INSTALLATION -->
+		<install cmd='%SOFTWARE%\Foxit\FoxitReader%PKG_VERSION%_enu_Setup.exe /silent' />
+		<install cmd='%comspec% /c IF EXIST "C:\Users\Public\Desktop\Foxit Reader.lnk" DEL "C:\Users\Public\Desktop\Foxit Reader.lnk"' />
+		
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove timeout="300" cmd='%ProgramFiles(x86)%\Foxit Software\Foxit Reader\unins000.exe /silent' />
+
+	</package>
+
+</packages:packages>

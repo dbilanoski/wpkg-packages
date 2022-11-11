@@ -5,6 +5,7 @@
 	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
 
 	<package 
+		id="chrome"
 		name="Google Chrome"
 		revision="%SYS_VERSION%"
 		reboot="false"
@@ -17,8 +18,7 @@
 		<check type="uninstall" condition="versiongreaterorequal" path="Google Chrome" value="%SYS_VERSION%" />
 
 		<!-- INSTALLATION -->
-		<!-- FIX FILENAME from ggogle to google once you a ready to deploy -->
-		<install cmd='msiexec /qn /norestart /i "%SOFTWARE%\Chrome\ggooglechromestandaloneenterprise64.msi"' />
+		<install cmd='msiexec /qn /norestart /i "%SOFTWARE%\Chrome\googlechromestandaloneenterprise64.msi"' />
 
 		<!-- Delete shortcuts in Public folder -->
 		<install cmd='%comspec% IF EXIST "C:\Users\Public\Desktop\Google Chrome.lnk" DEL /q "C:\Users\Public\Desktop\Google Chrome.lnk"' />

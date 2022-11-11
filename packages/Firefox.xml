@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="firefox"
+		name="Mozilla Firefox ESR"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="78.6.0" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+		<variable name="PD_LOCALE" value="en-US" />
+		<variable name="INSTALL_ARGS" value="-ms /INI=%SOFTWARE%\Firefox\Firefox_Setup_%PKG_VERSION%esr\config.ini" />
+		
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="exists" path="Mozilla Firefox %PKG_VERSION% ESR (x64 %PD_LOCALE%)" />
+
+		<!-- INSTALLATION -->
+		<!-- End current related processes -->
+		<install cmd="taskkill /F /IM Firefox.exe">
+			<exit code="any" />
+		</install>
+
+		<install cmd='"%SOFTWARE%\Firefox\Firefox_Setup_%PKG_VERSION%esr\setup.exe" %INSTALL_ARGS%' />
+			
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<!-- End current related processes -->
+		<install cmd="taskkill /F /IM Firefox.exe">
+			<exit code="any" />
+		</install>
+
+		<!-- Please note that default Firefox folder in C:\Program Files was overridden in our config.ini to be "Mozilla Firefox" -->
+		<remove cmd='%COMSPEC% /C "%ProgramFiles%\Mozilla Firefox\uninstall\helper.exe" /S' /> 
+	
+	</package>
+</packages:packages>

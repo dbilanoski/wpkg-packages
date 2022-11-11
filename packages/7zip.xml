@@ -11,12 +11,15 @@
     reboot="false"
     priority="1">
 
+    <!-- CONFIGURATION VARIABLES -->
     <variable name="PKG_VERSION" value="2201" />
     <variable name="SYS_VERSION" value="22.01" />
     <variable name="INSTALL_ARGS" value="/i /qn /norestart;" />
 
+    <!-- VALIDATION -->
     <check type="uninstall" condition="exists" path="7-Zip %SYS_VERSION% (x64)" />
 
+     <!-- INSTALLATION -->
     <install cmd='msiexec %INSTALL_ARGS% %SOFTWARE%\7zip\7z%PKG_VERSION%-x64.msi' architecture="x64" />
 		
 		<!-- 
@@ -27,12 +30,15 @@
       <exit code="any"/>
     </install>
 
+    <!-- UPGRADE -->
     <upgrade include="remove" />
     <upgrade include="install" />
 
+    <!-- DOWNGRADE -->
     <downgrade include="remove" />
     <downgrade include="install" />
 
+    <!-- DEINSTALLATION -->
     <remove cmd='wmic product where "name like &apos;7-Zip%%&apos;" call uninstall' /> 
 
   </package>

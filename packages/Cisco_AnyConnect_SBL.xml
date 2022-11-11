@@ -3,7 +3,7 @@
 <packages:packages
 	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
-PKG_VERSION
+
 	<package
 		id="cisco-anyconnect-sbl"
 		name="Cisco Anyconnect Start Before Login Module"

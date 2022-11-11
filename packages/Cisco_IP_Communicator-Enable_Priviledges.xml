@@ -12,7 +12,6 @@
 		priority="5">
 
 		<depends package-id="cisco-ip-communicator" />
-
 				
 		<!--
 					

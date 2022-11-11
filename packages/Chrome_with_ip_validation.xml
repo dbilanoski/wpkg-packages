@@ -5,6 +5,7 @@
         xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
 
   <package 
+		id="chrome"
 		name="Google Chrome"
 		revision="%SYS_VERSION%"
 		reboot="false"
@@ -39,9 +40,9 @@
  
     <!-- INSTALLATION -->
 		<!-- If not RAVPN, install from local file server -->
-		<install cmd='msiexec /qn /norestart /i "%SOFTWARE%\Chrome\ggooglechromestandaloneenterprise64.msi"'>
+		<install cmd='msiexec /qn /norestart /i "%SOFTWARE%\Chrome\googlechromestandaloneenterprise64.msi"'>
 			<condition>
-				<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File \\10.130.8.71\wpkg\HROS\scripts\ip_validator.ps1" condition="exitcodeequalto" value="500" />
+				<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %SOFTWARE%\scripts\ip_validator.ps1" condition="exitcodeequalto" value="500" />
 			</condition>
 		</install>
 
@@ -52,7 +53,7 @@
 		<install cmd='msiexec /qn /norestart /i %TEMP%\%DL_TARGET_1%'>
 			<download url="%DL_SOURCE_1%" target="%DL_TARGET_1%" timeout="7200">
 				<condition>
-					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File \\10.130.8.71\wpkg\HROS\scripts\ip_validator.ps1" condition="exitcodeequalto" value="501" />
+					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %SOFTWARE%\scripts\ip_validator.ps1" condition="exitcodeequalto" value="501" />
 				</condition>
 			</download>
 		</install>

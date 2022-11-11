@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="citrix-workspace-ltsr"
+		name="Citrix Workspace LTSR"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- COFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="22.3.1.41" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+				
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Citrix Workspace .+" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+
+		<!-- End current related processes -->
+		<install cmd='%COMSPEC% /c taskkill /F /IM AuthManSvr.exe /IM Receiver.exe /IM SelfService.exe /IM SelfServicePlugin.exe /T' >
+			<exit code="any" />
+		</install>
+
+		<install cmd='%SOFTWARE%\CitrixWorkspace\LTSR\%SYS_VERSION%\CitrixWorkspaceApp.exe /silent /forceinstall /AutoUpdateCheck=disabled /EnableCEIP=false'>
+			<exit code="0" />
+			<exit code="40008" />
+		</install>
+		
+		<!-- UPGRADE PROCEDURE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE PROCEDURE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- REMOVAL PROCEDURE -->
+		<!-- End current related processes -->
+		<remove cmd='%COMSPEC% /c taskkill /F /IM AuthManSvr.exe /T' >
+			<exit code="any" />
+		</remove>
+		
+		<!-- As we had a mix of version office wide, few different version we are targeting here -->
+		<remove cmd='"C:\ProgramData\Citrix\Citrix WorkSpace 2010\TrolleyExpress.exe" /uninstall /silent /cleanup'>
+			<condition>
+					<check type="uninstall" condition="exists" path="Citrix Workspace 2010" />
+				</condition>
+		</remove>
+
+		<remove cmd='"C:\Program Files (x86)\Citrix\Citrix WorkSpace 2105\TrolleyExpress.exe" /uninstall /silent /cleanup'>
+			<condition>
+					<check type="uninstall" condition="exists" path="Citrix Workspace 2105" />
+				</condition>
+		</remove>
+		
+		<remove cmd='"C:\Program Files (x86)\Citrix\Citrix WorkSpace 2202\TrolleyExpress.exe" /uninstall /silent /cleanup'>
+			<condition>
+					<check type="uninstall" condition="exists" path="Citrix Workspace 2202" />
+				</condition>
+		</remove>
+
+		<remove cmd='"C:\Program Files (x86)\Citrix\Citrix WorkSpace 2203\TrolleyExpress.exe" /uninstall /silent /cleanup'>
+			<condition>
+					<check type="uninstall" condition="exists" path="Citrix Workspace 2203" />
+				</condition>
+		</remove>
+ 
+	</package>
+	
+</packages:packages>
