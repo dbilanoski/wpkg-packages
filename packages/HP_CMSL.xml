@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="hp-cmsl"
+		name="HP Client Management Script Library"
+		revision="%sys_version%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+			
+			# NOTES
+			https://developers.hp.com/hp-client-management/blog/deploying-hp-client-management-script-library-microsoft-intune 
+
+			On this, you can chain hp-bios-update package which executes the BIOS update itself.
+			Powershell command: Get-HPBIOSUpdates -Flash -Yes -BitLocker Suspend
+			That one will check, download and schedule the BIOS update. When applied, it will start automatically on next boot.
+			
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="sys_version" value="1.6.2" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="HP Client Management Script Library" value="%sys_version%" />
+		
+		<!-- INSTALLATION -->
+		<install cmd='%COMSPEC% /C %SOFTWARE%\HP_CMSL\hp-cmsl-1.6.2.exe /VERYSILENT /SUPPRESSMSGBOXES /NORESTART /LOG="C:\hp_cmsl.log"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+		
+		<!-- DOWNGRADE -->
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='C:\Program Files\WindowsPowerShell\HP.CMSL.UninstallerData\unins000.exe /VERYSILENT /NORESTART /SUPPRESSMSGBOXES' />
+
+	</package>
+
+</packages:packages>

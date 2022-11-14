@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="hp-bcu"
+		name="HP Bios Configuration Utility"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+			
+			As silent switches are not reliable in the classic installer, we are doing it manualy.
+			We copy the application files ourselves and create a custom validation for the wpkg checkup.
+
+			You can try the unattended installation like this:
+			<install cmd='%COMSPEC% /C %SOFTWARE%\HP_BCU\sp107705.exe /S' />
+		
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="4.0.32.1" />
+		<variable name="UNINSTALL_STRING" value="{4EC31E09-AFC1-496B-8AF0-9BE81999BE5F}" />
+
+		<!-- VALIDATION -->
+		<check type="logical" condition="or">
+			<check type="uninstall" condition="versiongreaterorequal" path="HP BIOS Configuration Utility" value="%SYS_VERSION%" />
+			<check type="file" condition="exists" path="C:\Program Files (x86)\HP\BIOS Configuration Utility\HP_BCU_Validator_%SYS_VERSION%.txt" />
+		</check>
+
+		<!-- INSTALLATION -->
+		<!-- If there is a HP folder already created on user's system, skip creation -->
+		<install cmd='%COMSPEC% /C mkdir "C:\Program Files (x86)\HP' >
+			<condition>
+				<check type="logical" condition="not">
+					<check type="file" condition="exists" path="C:\Program Files (x86)\HP\" />
+				</check>
+			</condition>
+		</install>
+
+		<!-- Copy program's files -->
+		<install cmd='%COMSPEC% /C XCOPY "%SOFTWARE%\HP_BCU\BIOS Configuration Utility" "C:\Program Files (x86)\HP\Bios Configuration Utility" /h /y /e /i /s /c' />
+
+		<!-- Write custom validator -->
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - CUSTOM HP-BCU VALIDATION > "C:\Program Files (x86)\HP\BIOS Configuration Utility\HP_BCU_Validator_%SYS_VERSION%.txt"' />
+		
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='msiexec /qn /X%UNINSTALL_STRING%'>
+			<exit code="any" />
+		</remove>
+
+		<!-- Delete program's files if not deleted by the deinstallation -->
+		<remove cmd='%COMSPEC% /C IF EXIST "C:\Program Files (x86)\HP\Bios Configuration Utility" RD /S /Q "C:\Program Files (x86)\HP\Bios Configuration Utility"' />
+
+		<!-- Delete custom validator -->
+		<remove cmd='%COMSPEC% /C IF EXIST "C:\Program Files (x86)\HP\BIOS Configuration Utility\HP_BCU_Validator_%SYS_VERSION%.txt" DEL "C:\Program Files (x86)\HP\BIOS Configuration Utility\HP_BCU_Validator_%SYS_VERSION%.txt" /f /q' />
+
+	</package>
+
+</packages:packages>

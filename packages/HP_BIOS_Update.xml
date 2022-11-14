@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="hp-bios-update"
+		name="HP BIOS Updater"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+			
+			This one will depend on hp-cmsl package (HP Client Management Script Library).
+			Once that is installed, we can execute the powershell command to check and schedule the BIOS update which is handled here.
+			Once applied, BIOS update will start automatically on the next boot.
+		
+		-->
+
+		<!-- EXPLICIT WPKG DEPENDENCIES -->
+		<depends package-id="hp-cmsl" />
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="1.0.0" />
+
+		<!-- VALIDATION -->
+		<check type="file" condition="exists" path="C:\Program Files\HPBIOS_%SYS_VERSION%.txt" />
+		
+		<!-- INSTALLATION -->
+		<install cmd='%COMSPEC% /C "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -command "&amp; Get-HPBIOSUpdates -Flash -Yes -BitLocker Suspend""' />
+    
+    <install cmd='%COMSPEC% /C echo DO NOT DELETE - HP FIRMWARE VALIDATOR > "C:\Program Files\HPBIOS_%SYS_VERSION%.txt"' />
+
+		<!-- UPGRADE -->
+    <upgrade include="remove" />
+    <upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+    <upgrade include="remove" />
+    <upgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+    <remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\HPBIOS_*.txt"' />
+		
+	</package>
+
+</packages:packages>
