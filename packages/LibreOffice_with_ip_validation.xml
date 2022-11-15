@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="libre-office-dl"
+		name="Libre Office"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+			This package relies on ip address validation script here: https://github.com/dbilanoski/wpkg-packages/blob/main/assets/wpkg_ip_validator.ps1
+
+			Script logic:
+				* Script will check if you current IP address is in the range of you internal supernet
+					* if yes, it will exit with 500 (means user is on internal network)
+					* if no, it will exit with 501 (means users is not on internal network)
+
+			WPKG package logic:
+				* If user is on RAVPN, package will be downloaded from %DL_LINK_*% then installed (validation script returned 501) 
+				* If user is on internal network, package will install from local file server (validation script returned 500)
+			
+			NOTE 
+				* Since the <condition> tag only affects the direct parent tag, not the whole nested stack, using conditioned download under install (install > download > condition ) is not preferable as it returns error
+			 	* This is why in this approach we have download performed under install tag
+		-->
+
+		<!-- COFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="7.2.5" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.2" />
+		<variable name="UNINSTALL_STRING" value="{4E84F757-5589-4EC1-9266-3FAE32634545}" />
+		<variable name="INSTALL_ARGS" value='/qn /norestart /l "c:\libreoffice635.log" ALLUSERS=1 CREATEDESKTOPLINK=0 REGISTER_ALL_MSO_TYPES=1 REGISTER_NO_MSO_TYPES=0 ISCHECKFORPRODUCTUPDATES=0 QUICKSTART=1 ADDLOCAL=ALL REMOVE=gm_o_Onlineupdate,gm_p_Base,gm_p_Math' />
+		<variable name="IP_VALIDATION_SCRIPT" value="%SOFTWARE%\scripts\ip_validator.ps1" />
+		<variable name="DL_SOURCE1" value="https://your-download-link-LibreOffice_7.2.5_Win_x64.msi" /> 
+		<variable name="DL_TARGET1" value="C:\Users\Public\Downloads\libre_%SYS_VERSION%.msi" />
+		
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="LibreOffice %SYS_VERSION%" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<!-- Download -->
+		<!-- Dowload installer from internet in case machine is off-site and file not already downloaded -->
+		<install cmd='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -command "&#038; Invoke-WebRequest -Uri %DL_SOURCE1% -OutFile %DL_TARGET1%"'>
+			<condition>
+				<check type="logical" condition="and" >
+					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %IP_VALIDATION_SCRIPT%" condition="exitcodeequalto" value="501" />
+					<check type="logical" condition="not" >
+						<check type="file" condition="exists" path="%DL_TARGET1%" />
+					</check>
+				</check>
+			</condition>
+		</install>
+
+		<!-- Offsite Case -->
+		<!-- If download was successfull (workstation is not on-site) or file was already there, install from it -->
+		<install cmd='msiexec /i "%DL_TARGET1%" %INSTALL_ARGS%'>
+			<condition>
+				<check type="logical" condition="or" >
+					<check type="file" condition="exists" path="%DL_TARGET1%" />
+					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %IP_VALIDATION_SCRIPT%" condition="exitcodeequalto" value="501" />
+				</check>
+			</condition>
+		</install>
+
+		<!-- Onsite Case -->
+		<!-- If download was not successfull (workstation is on-site), install from internal file server -->
+		<install cmd='msiexec /i "%SOFTWARE%\LibreOffice\LibreOffice_%PKG_VERSION%_Win_x64.msi" %INSTALL_ARGS%'>
+			<condition>
+				<check type="logical" condition="and" >
+					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %IP_VALIDATION_SCRIPT%" condition="exitcodeequalto" value="500" />
+					<check type="logical" condition="not" >
+						<check type="file" condition="exists" path="%DL_TARGET1%" />
+					</check>
+				</check>
+			</condition>
+		</install>
+		
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='wmic product where "name like "LibreOffice%%"" call uninstall' />
+
+		<!-- Delete existing downloaded files on deinstallation -->
+		<remove cmd='%comspec% /c del %DL_TARGET1%'>
+			<exit code="any" />
+		</remove>
+ 
+	</package>
+	
+</packages:packages>

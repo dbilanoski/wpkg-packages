@@ -32,7 +32,8 @@
 		<!-- CONFIGURATION VARIABLES -->
 		<variable name="SYS_VERSION" value="102.0.5005.115" />
 		<variable name="UNINSTALL_STRING" value="{B24F0A95-6C38-3CA4-AFC8-7BDD38B8C51D}" />
-		<variable name="DL_SOURCE_1" value="https://storage.googleapis.com/wpkg-osijek/Software/GoogleChrome/googlechromestandaloneenterprise64_102.0.5005.115.msi" />
+		<variable name="IP_VALIDATION_SCRIPT" value="%SOFTWARE%\scripts\ip_validator.ps1" />
+		<variable name="DL_SOURCE_1" value="https://your-download-link/googlechromestandaloneenterprise64_102.0.5005.115.msi" />
 		<variable name="DL_TARGET_1" value="googlechromestandaloneenterprise64_102.0.5005.115.msi" />
 
     <!-- VALIDATION -->
@@ -42,7 +43,7 @@
 		<!-- If not RAVPN, install from local file server -->
 		<install cmd='msiexec /qn /norestart /i "%SOFTWARE%\Chrome\googlechromestandaloneenterprise64.msi"'>
 			<condition>
-				<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %SOFTWARE%\scripts\ip_validator.ps1" condition="exitcodeequalto" value="500" />
+				<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %IP_VALIDATION_SCRIPT%" condition="exitcodeequalto" value="500" />
 			</condition>
 		</install>
 
@@ -53,7 +54,7 @@
 		<install cmd='msiexec /qn /norestart /i %TEMP%\%DL_TARGET_1%'>
 			<download url="%DL_SOURCE_1%" target="%DL_TARGET_1%" timeout="7200">
 				<condition>
-					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %SOFTWARE%\scripts\ip_validator.ps1" condition="exitcodeequalto" value="501" />
+					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %IP_VALIDATION_SCRIPT%" condition="exitcodeequalto" value="501" />
 				</condition>
 			</download>
 		</install>

@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+    <package
+			id="libre-office"
+			name="Libre Office"
+			revision="%SYS_VERSION%"
+			reboot="false"
+			priority="30">
+
+			<!-- CONFIGURATION VARIABLES -->
+			<variable name="PKG_VERSION" value="6.4.6" />
+			<variable name="SYS_VERSION" value="%PKG_VERSION%.2" />
+			<variable name="UNINSTALL_STRING" value="{C91FC8F1-C648-422B-BF7C-ED71E74EC29C}" />
+			<variable name="INSTALL_ARGS" value='/qn /norestart /l "c:\libreoffice635.log" ALLUSERS=1 CREATEDESKTOPLINK=0 REGISTER_ALL_MSO_TYPES=1 REGISTER_NO_MSO_TYPES=0 ISCHECKFORPRODUCTUPDATES=0 QUICKSTART=1 ADDLOCAL=ALL REMOVE=gm_o_Onlineupdate,gm_p_Base,gm_p_Math' />
+
+			<!-- VALIDATION -->
+			<check type="uninstall" condition="versiongreaterorequal" path="LibreOffice %SYS_VERSION%" value="%SYS_VERSION%" />
+
+			<!-- INSTALLATION -->
+			<install cmd='msiexec /i "%SOFTWARE%\LibreOffice\LibreOffice_%PKG_VERSION%_Win_x64.msi" %INSTALL_ARGS%' />
+
+			<!-- 
+				
+				In case you want to apply registry edit to make Microsoft file types as default for "Save as" do this:
+
+					1. Create registrymodifications.xcu file and save it in the software repository folder where the installer is
+					2. Paste following code in it and save it:
+		
+						<?xml version="1.0" encoding="UTF-8"?>
+						<oor:items xmlns:oor="http://openoffice.org/2001/registry" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+						<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="FirstRun" oor:op="fuse"><value>false</value></prop></item>
+						<item oor:path="/org.openoffice.Office.Common/Misc"><prop oor:name="ShowTipOfTheDay" oor:op="fuse"><value>false</value></prop></item>
+						<item oor:path="/org.openoffice.Setup/Office/Factories/org.openoffice.Setup:Factory['com.sun.star.presentation.PresentationDocument']"><prop oor:name="ooSetupFactoryDefaultFilter" oor:op="fuse"><value>Impress MS PowerPoint 2007 XML</value></prop></item>
+						<item oor:path="/org.openoffice.Setup/Office/Factories/org.openoffice.Setup:Factory['com.sun.star.sheet.SpreadsheetDocument']"><prop oor:name="ooSetupFactoryDefaultFilter" oor:op="fuse"><value>Calc MS Excel 2007 XML</value></prop></item>
+						<item oor:path="/org.openoffice.Setup/Office/Factories/org.openoffice.Setup:Factory['com.sun.star.text.TextDocument']"><prop oor:name="ooSetupFactoryDefaultFilter" oor:op="fuse"><value>MS Word 2007 XML</value></prop></item>
+						</oor:items>
+					
+					3. During installation, after the installation part, copy that file to "C:\Program Files\LibreOffice\share\registry\data\org\libreoffice"
+
+			-->
+
+			<install cmd='%comspec% /c xcopy "%SOFTWARE%\LibreOffice\SaveAsMSOffice" "C:\Program Files\LibreOffice\share\registry\data\org\libreoffice" /r /y /e /i /s /c' />
+			
+			<!-- UPGRADE -->
+			<upgrade include="install" />
+		
+			<!-- DOWNGRADE -->
+			<downgrade include="remove" />
+			<downgrade include="install" />
+			
+			<!-- DEINSTALLATION -->
+			<remove cmd="msiexec /qb! /uninstall %UNINSTALL_STRING%" />
+
+	</package>
+
+</packages:packages>
