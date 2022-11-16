@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages xmlns:packages="http://www.wpkg.org/packages"
+	xmlns:wpkg="http://www.wpkg.org/wpkg"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd">
+
+	<package id='python' 
+		name='Python' 
+		revision="%SYS_VERSION%" 
+		priority='80' 
+		reboot='false' >
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="3.10.0" />
+		<variable name="SYS_VERSION" value="3.10.150.0" />
+		<variable name="UNINST_STRING" value="{463B0974-B1E1-401E-8F59-B0F9F81258E4}" />
+		<variable name="PKG_INSWITCHES" value="/quiet InstallAllUsers=1 PrependPath=1 /log &#34;C:\Program Files\Python310-Install.log&#34;" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Python.+" value="%sys_version%" />
+
+		<!-- INSTALLATION -->
+		<install cmd="%SOFTWARE%\Python\python-%PKG_VERSION%-amd64.exe %PKG_INSWITCHES%" />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE PROCEDURE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- UNINSTALL PROCEDURE -->
+		<remove cmd="%SOFTWARE%\Python\python-%PKG_VERSION%-amd64.exe /uninstall /quiet" />
+		<!-- This is needed to remove Python Launcher -->
+		<remove cmd='msiexec /qn /X %UNINST_STRING%' />
+
+	</package>
+
+	</packages:packages>

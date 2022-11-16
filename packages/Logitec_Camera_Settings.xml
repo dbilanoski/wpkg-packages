@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+  <package id="logitec-camera-settings"
+		name="Logitec Camera Settings 270-310"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+
+				This one will depend on the logitec-cam270-310-driver package which installs the logitec-cam270-310 driver.
+				Without it, application will work but will not support crop and zoom functionalities.
+
+		-->
+
+		<!-- WPKG EXPLICIT DEPENDENCIES -->
+		<depends package-id="logitec-cam270-310-driver" />
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="2.5.17.0" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Logitech Camera Settings" value="%SYS_VERSION%" />          
+		
+		<!-- INSTALLATION -->
+		<install cmd='"%SOFTWARE%\LogitechCamSoftware\C220_C310\LogiCameraSettings_2.5.17.exe" /S /U:0 /A:0' />
+		<!-- This will delete desktop icon -->
+		<install cmd='%COMSPEC% /C DEL /Q "C:\Users\Public\Desktop\Logitech Camera Settings.lnk"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+		
+ 		<!-- DEINSTALLATION -->
+		<remove cmd='"C:\Program Files (x86)\Common Files\LogiShrd\LogiUCDpp\uninstall.exe" /S' />
+  
+	</package>
+
+</packages:packages>

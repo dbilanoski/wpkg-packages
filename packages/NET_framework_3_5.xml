@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id="dotnet-3.5-sp1"
+		name="Microsoft .NET Framework 3.5 SP1"
+		revision="%SYS_VERSION%"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="3.5" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+		<variable name="UNINSTALL_STRING" value="{CE2CDD62-0124-36CA-84D3-9F4DCF5C5BD9}" />
+	
+		<!-- VALIDATION -->
+		<check type='logical' condition='or'>
+			<check type="uninstall" condition="exists" path="Microsoft .NET Framework 3.5 SP1" />
+			<check type='file' condition='exists' path='%SYSTEMROOT%\Microsoft.NET\Framework\v3.5\MSBuild.exe' />
+		</check>
+
+		<!-- INSTALLATION -->
+		<install cmd='%SOFTWARE%\dotNetFramework\3.5\dotnetfx35.exe /q /norestart' >
+			<exit code="194" reboot="true" />
+			<exit code="1603" />
+			<exit code="3010" reboot="true" />
+		</install>
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='MsiExec.exe /qn /X%UNINSTALL_STRING%' />
+  
+	</package>
+
+</packages:packages>

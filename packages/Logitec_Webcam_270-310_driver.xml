@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id="logitec-cam270-310-driver"
+		name="Logitec WebCam 270-310 Drivers "
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="31">
+
+		<!-- 
+
+				Windows 10/11 will provide sufficient drivers for this camera out of the box.
+				This we use in conjuction with HP Camera settings tool which will not provide zoom and crop functionalities without this drivers.
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="1.0.0" />
+
+		<!-- VALIDAITON -->
+		<check type="file" condition="exists" path="C:\Program Files\Logitec_Webcam_270-310_drv_%SYS_VERSION%.txt" />
+
+		<!-- INSTALLATION -->
+		<install cmd='"%SOFTWARE%\LogitechCamSoftware\C220_C310\LWS_Driver_Installer_x64.exe" /S' />
+		<!-- Make custom validaiton by creating a file -->
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - Logitec Webcam 270-310 drivers VALIDATION > "C:\Program Files\Logitec_Webcam_270-310_drv_%SYS_VERSION%.txt"' />
+		 
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\Logitec_Webcam_270-310_drv_*.txt"' />
+  
+	</package>
+</packages:packages>

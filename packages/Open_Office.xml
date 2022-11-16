@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="open-office"
+		name="Open Office"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable architecture="x86" name="PROGFILES" value="%PROGRAMFILES%" />
+		<variable architecture="x64" name="PROGFILES" value="%PROGRAMFILES(X86)%" />
+		<variable name="PKG_VERSION" value="4.17.9800" />
+		<variable name="PKG_SHORT_VERSION" value="417" />
+		<variable name="PKG_GRAND_VERSION" value="4" />
+		<!-- NOTE: you need SETUP_USED=1 switch on msi installer for setup to use setup.exe package during installation -->
+		<variable name="INSTALL_ARGS" value="/qn SETUP_USED=1 ALLUSERS=1 ADDLOCAL=ALL SELECT_WORD=1 SELECT_EXCEL=1 SELECT_POWERPOINT=1 REMOVE=gm_p_Base,gm_p_Base_Bin,gm_p_Math,gm_p_Math_Bin,gm_o_Xsltfiltersamples,gm_o_Onlineupdate,gm_o_Quickstart,gm_o_Javafilter,gm_o_Pyuno" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+		<variable name="SYS_CONFIG_FOLDER" value="%PROGFILES%\OpenOffice %PKG_GRAND_VERSION%\share\registry\data\org\openoffice" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="OpenOffice .+" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='msiexec /i "%SOFTWARE%\OpenOffice\openoffice%PKG_SHORT_VERSION%.msi" /l*v C:\%PROGFILES%\openOffice_%PKG_SHORT_VERSION%.log %INSTALL_ARGS% USERNAME="User" COMPANYNAME="CompanyName"' />
+		<install cmd='%COMPSPEC% /c xcopy "%SOFTWARE%\OpenOffice\predefined_config" "%SYS_CONFIG_FOLDER" /r /y /e /i /s /c' />
+
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='wmic product where "name like &apos;OpenOffice%%&apos;" call uninstall' /> 
+		
+	</package>
+
+</packages:packages>

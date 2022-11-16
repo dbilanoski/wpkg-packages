@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id='ocs-inventory'
+		name='OCSInventory'
+		revision="%SYS_VERSION%"
+		priority='30'
+		reboot='false' >
+
+		<!-- 
+
+			NOTES
+				* SSL certificate is used here in a way to be copied from your software repo to the OCS Agent folder in %PROGRAMDATA% so the agent application has it locally
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="2.9.0.0" />
+		<variable name="OCS_SERVER" value="https://your-ocs-inventory-server-address/" /> 
+		<variable name="OCS_TAG" value="Your OCS Tag/" /> 
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="OCS Inventory NG Agent .*" value="%SYS_VERSION%" />	
+		
+		<!-- INSTALLATION -->
+		<!-- End current related processes -->
+		<install cmd='taskkill /F /IM OcsService.exe'>
+			<exit code="any" />
+		</install>
+
+		<!-- Copy the certificate -->
+		<install cmd='%COMSPEC% /C echo F | XCOPY "%SOFTWARE%\OCS_Inventory_NG\Cert\cacert.pem" "%PROGRAMDATA%\OCS Inventory NG\Agent\cacert.pem " /y /e /i /s /c' />
+
+		<!-- Install software -->
+		<install cmd="%SOFTWARE%\OCS_Inventory_NG\OCS-Windows-Agent-2.9.0.0_x64\OCS-Windows-Agent-Setup-x64.exe /S /NOSPLASH /SERVER='%OCS_SERVER%' /NO_SYSTRAY /TAG='%OCS_TAG%' /SSL=1 /CA='cacert.pem' /NOW" />
+
+		<!-- Configure service startup as delayed (120 seconds default) -->
+		<install cmd='sc config "OCS Inventory Service" start=delayed-auto'>
+			<exit code="any" />
+		</install>
+		
+		<!-- UPGRADE -->
+		<!-- End current related processes -->
+		<install cmd='taskkill /F /IM OcsService.exe'>
+			<exit code="any" />
+		</install>
+
+		<!-- Copy the certificate -->
+		<upgrade cmd='%COMSPEC% /C echo F | XCOPY "%SOFTWARE%\OCS_Inventory_NG\Cert\cacert.pem" "%PROGRAMDATA%\OCS Inventory NG\Agent\cacert.pem " /y /e /i /s /c' />
+		
+		<!-- Upgrade software -->
+	  <upgrade cmd="%SOFTWARE%\OCS_Inventory_NG\OCS-Windows-Agent-2.9.0.0_x64\OCS-Windows-Agent-Setup-x64.exe /S /NOSPLASH /SERVER='%OCS_SERVER%' /NO_SYSTRAY /TAG='%OCS_TAG%' /SSL=1 /CA='cacert.pem' /NOW /UPGRADE" />
+		
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="upgrade" />
+
+		<!-- DEINSTALLATION -->
+		<!-- IF 32bit application exists -->
+		<remove cmd='%COMSPEC% /C "%PROGRAMFILES(x86)%\OCS Inventory Agent\uninst.exe" /S' >
+			<condition>
+				<check type="file" condition="exists" path="%PROGRAMFILES(x86)%\OCS Inventory Agent\uninst.exe" />
+			</condition>
+			<exit code="any" />
+		</remove>
+
+		<!-- Standard x64 uninstall (can't use architecture variable due to 32bit being forced od 64bit systems) -->
+		<remove cmd='%COMSPEC% /C "%PROGRAMFILES%\OCS Inventory Agent\uninst.exe" /S' >
+			<condition>
+				<check type="file" condition="exists" path="%PROGRAMFILES%\OCS Inventory Agent\uninst.exe" />
+			</condition>
+			<exit code="any" />
+		</remove>
+	
+	</package>
+
+</packages:packages>

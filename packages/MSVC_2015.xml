@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id="MSVC2015"
+		name="Visual C++ Redistributable for Visual Studio 2015 (x86)"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="14.0.23026" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.0" />
+		<variable name="UNINSTALL_STRING" value="{74d0e5db-b326-4dae-a6b2-445b9de1836e}" />
+		<variable name="UNINSTALL_STRING_x64" value="{e46eca4f-393b-40df-9f49-076faf788d83}" />
+  
+		<!-- VALIDATION -->
+		<check type="registry" condition="exists" path="HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\X86" />
+
+		<!-- INSTALLATION -->		
+		<install cmd='"%SOFTWARE%\VisualC\2015\vc_redist.x86.exe" /quiet /norestart' />
+		
+		<!-- 
+			Here we are installing x86 explicitly. In case x64 is needed, you can edit the package with below additon.
+
+			<install cmd='"%SOFTWARE%\VisualC\2015\vc_redist.x64.exe" /quiet /norestart' /> 
+		-->
+		 
+		 <!-- UPGRADE -->	
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->	
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='"%ProgramData%\Package Cache\%UNINSTALL_STRING%\VC_redist.x86.exe" /uninstall /norestart /quiet' />
+		<!-- <remove cmd='"%ProgramData%\Package Cache\%UNINSTALL_STRING_x64%\VC_redist.x64.exe" /uninstall /norestart /quiet' /> -->
+  
+	</package>
+
+</packages:packages>

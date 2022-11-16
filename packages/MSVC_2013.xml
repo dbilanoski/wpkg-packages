@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id="MSVC2013"
+		name="Visual C++ Redistributable for Visual Studio 2013"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="12.0.30501" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.0" />
+		<variable name="UNINSTALL_STRING" value="{f65db027-aff3-4070-886a-0d87064aabb1}" />
+
+		<!-- VALIDATION -->
+		<check type="registry" condition="exists" path="HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\12.0\VC\Runtimes\X86" />
+
+		<!-- INSTALLATION -->
+		<install cmd='"%SOFTWARE%\VisualC\2013\vcredist_x86.exe" /quiet /norestart' />
+		 
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+	
+		<!-- DEINSTALLATION -->
+    <remove cmd='"%ProgramData%\Package Cache\%UNINSTALL_STRING%\vcredist_x86.exe" /uninstall /norestart /quiet' />
+  
+	</package>
+
+</packages:packages>

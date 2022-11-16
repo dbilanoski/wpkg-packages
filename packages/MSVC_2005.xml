@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id="MSVC2005"
+		name="Visual C++ Redistributable for Visual Studio 2005"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="8.0.61001" />
+    <variable name="UNINSTALL_STRING" value="{710f4c1c-cc18-4c49-8cbf-51240c89a1a2}" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Microsoft Visual C++ 2005 Redistributable" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='"%SOFTWARE%\VisualC\2005\vcredist_x86.exe" /q:a /c:"msiexec.exe /i vcredist.msi /qn"' />
+		 
+		 <!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+		
+		<!-- DEINSTALLATION -->
+		<remove cmd="msiexec /qn /X%UNINSTALL_STRING%" />
+
+	</package>
+
+</packages:packages>

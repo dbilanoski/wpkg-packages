@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id="MSVC2012"
+		name="Visual C++ Redistributable for Visual Studio 2012"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="11.0.61030" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.0" />
+    <variable name="UNINSTALL_STRING" value="{33d1fd90-4274-48a1-9bc1-97e33d9c2d6f}" />
+
+		<!-- VALIDATION -->
+		<check type="registry" condition="exists" path="HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\11.0\VC\Runtimes\X86" />
+		<!-- <check type="registry" condition="exists" path="HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\VisualStudio\11.0\VC\Runtimes\X64" /> -->
+
+		<!-- INSTALLATION -->
+		<install cmd='"%SOFTWARE%\VisualC\2012\vcredist_x86.exe" /install /quiet /norestart' />
+		
+		<!-- 
+			Here we are installing x86 explicitly. In case x64 is needed, you can edit the package with below additon.
+		
+			<install cmd='"%SOFTWARE%\VisualC\2012\vcredist_x64.exe" /install /quiet /norestart' /> 	
+		-->
+
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+		
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='"%ProgramData%\Package Cache\%UNINSTALL_STRING%\vcredist_x86.exe" /uninstall /norestart /quiet' />
+  
+	</package>
+
+</packages:packages>
