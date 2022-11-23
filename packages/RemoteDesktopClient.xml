@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package 
+		id="RemoteDesktopClient"
+		name="Microsoft Remote Desktop Client"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="1.2.3316.0" />
+		<variable name="UNINSTALL_STRING_1" value="{8725CDE7-E23A-4E41-B514-DBC621B29350}" />	
+		<variable name="UNINSTALL_STRING_2" value="{BF486C0D-B2F0-4623-9956-F90AF33D3C47}" />				
+		
+		<!-- VALIDATION -->
+		<check type="logical" condition="or">
+			<check type="uninstall" condition="exists" path="Remote Desktop" value="%SYS_VERSION%" />
+			<check type="uninstall" condition="exists" path="Remotedesktop" value="%SYS_VERSION%" />
+		</check>
+
+		<!-- INSTALLATION -->
+		<install cmd='msiexec /i "%SOFTWARE%\RemoteDesktopClient\RemoteDesktop_%SYS_VERSION%_x64.msi" /qn ALLUSERS=1' >
+			<exit code="any"/>
+		</install>
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='msiexec /qn /X%UNINSTALL_STRING_1%'>
+			<exit code="any" />
+		</remove>
+		
+		<remove cmd='msiexec /qn /X%UNINSTALL_STRING_2%'>
+			<exit code="any" />
+		</remove>
+
+	</package>
+</packages:packages>

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+    
+	<package id="qfiniti-settings"
+		name="Qfiniti Settings Modifier"
+		revision="%SYS_VERSION%"
+		reboot="postponed"
+		priority="30">
+
+		<!-- EXPLICIT WPKG DEPENDENCIES -->
+		<depends package-id="qfiniti_agent" />
+
+		<!--
+			# NOTES
+		
+			This one modifies Qfiniti configuration where you can update:
+				* Agent Monitor Server IP address
+				* SP System Configuration name
+				* Web Server name
+			
+			Just adjust Qfinitiy parameter variables below to desired values.
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable architecture="x86" name="PROGFILES" value="%PROGRAMFILES%" />
+		<variable architecture="x64" name="PROGFILES" value="%PROGRAMFILES(X86)%" />
+		<variable name="SYS_VERSION" value="1.0.1" />
+		<!-- Qfinity Parameters -->
+		<variable name="QF_SERVER_IP" value="your-ip-address" />
+		<variable name="QF_SYSTEM_CONFIGURATION_NAME" value="your-system-config-name" />
+		<variable name="QF_WEB_SERVER_NAME" value="your-web-server-name" />
+
+		<!-- VALIDATION -->
+		<check type="file" condition="exists" path="%PROGFILES%\Qfiniti\rtd_validator_%SYS_VERSION%.txt" />
+
+		<!-- INSTALLATION -->
+		<install cmd='%COMSPEC% /C REG ADD "HKLM\SOFTWARE\Wow6432Node\etalk Corporation\Qfiniti\Agent Monitor Engine" /v "Agent Monitor Server IP" /t REG_SZ /d "%QF_SERVER_IP%" /f' />
+		<install cmd='%COMSPEC% /C REG ADD "HKLM\SOFTWARE\Wow6432Node\etalk Corporation\Qfiniti\Agent Monitor Engine" /v "SP System Configuration Name" /t REG_SZ /d "%QF_SYSTEM_CONFIGURATION_NAME%" /f' />
+		<install cmd='%COMSPEC% /C REG ADD "HKLM\SOFTWARE\Wow6432Node\etalk Corporation\Qfiniti\Agent Monitor Engine" /v "Web Server Name" /t REG_SZ /d "%QF_WEB_SERVER_NAME%" /f' />
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - Qfiniti Modified Configuration wpkg package VALIDATION > "%PROGFILES%\Qfiniti\Qfiniti_modifier_%SYS_VERSION%.txt"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+    <downgrade include="upgrade" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%COMSPEC% /C DEL /Q "%PROGFILES%\Qfiniti\Qfiniti_modifier_*.txt"' />
+		
+	</package>
+
+</packages:packages>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="qfiniti_agent"
+		name="Qfiniti Agent"
+		revision="%SYS_VERSION%"
+		reboot="postponed"
+		priority="35">
+
+		<!-- EXPLICIT WPKG DEPENDENCIES -->
+ 	  <depends package-id="MSVC2012" />
+		<depends package-id="MSVC2015-2019-32" />
+		
+		<!-- 
+			
+			# NOTES
+		
+			Dependencies for this are:
+				* Visual C++ 2017 x86 Update 4 
+					- Covered by the Visual C++ 2015-2019 package
+			 	* Visual C++ 2005 8.0.56336
+					- not available for download on the internet (updated by 8.0.59193 version)
+					- installer comes with it but the trick is to use .exe for installation as the .msi will not install it
+			
+			Make sure to adjust the "INSTALL_ARGS" variable so it contains values related to your setup.
+			Uncomment ICE related stuff if you gonna use it.
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable architecture="x86" name="PROGFILES" value="%PROGRAMFILES%" />
+		<variable architecture="x64" name="PROGFILES" value="%PROGRAMFILES(X86)%" />
+		<variable name="PKG_VERSION" value="16.5" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.0" />
+		<variable name="INSTALL_ARGS" value='/s /v" /qn ALLUSERS=1 INSTALL_TYPE=2 ADDLOCAL=Client,Agent,AgentMonitorEngine,AgentMonitorConsole,Supervisor,G729Codec TYPE=WINDOWS_AUTO SYSTEMTRAYAPP=true IP=your-ip SP_SYSTEM_CONFIG_NAME=your-sys-name WEBSERVER=your-web-server /l*v c:\qf_installation.log"' />
+		<variable name="UNINSTALL_STRING" value="{46C6156A-5706-4ACA-B4A4-22EE6D562B5E}" />
+		<!-- Target folder for patching QF Desktop -->
+    <variable name="SYS_CONFIG_FOLDER_1" value="%PROGFILES%\Qfiniti\Qfiniti Desktop" />
+		<!-- Target folder for patching QF ICE -->
+		<variable name="SYS_CONFIG_FOLDER_2" value="%PROGFILES%\Qfiniti\ICE\Client" />
+
+ 		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Qfiniti Client" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<!-- Pre-install clean-up -->
+		<install cmd='%COMSPEC% IF EXIST "%PROGFILES%\Qfiniti\Qfiniti Desktop\ApplicationManager.exe.config" DEL /Q "%PROGFILES%\Qfiniti\Qfiniti Desktop\ApplicationManager.exe.config"' />
+		<install cmd='%COMSPEC% IF EXIST "%PROGFILES%\AgentMonitorConsole.exe.config" DEL /Q "%PROGFILES%\AgentMonitorConsole.exe.config"' />
+		<install cmd='%COMSPEC% REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\etalk Corporation" /F' >
+			<exit code="any" />
+		</install>
+		<install cmd='%COMSPEC% REG DELETE "HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\etalk Corporation" /F' >
+				<exit code="any" />
+		</install>
+		
+		<!-- Installation -->
+    <install cmd='"%SOFTWARE%\Qfiniti\Qfiniti_%SYS_VERSION%\Qfiniti %PKG_VERSION% Client DVD\setup.exe" %INSTALL_ARGS%' />
+
+		<!-- Applying the path -->
+		<!-- End current related processes -->
+		<install cmd='%COMSPEC% /c taskkill /f /t /im qAME.exe'>
+			<exit code="any" />
+		</install>
+		<install cmd='%COMSPEC% /c taskkill /f /t /im AgentMonitorConsole.exe'>
+			<exit code="any" />
+		</install>
+		<!-- This one is needed in case of using ICE server -->
+		<install cmd='%COMSPEC% /c taskkill /f /t /im AutoLink.exe'>
+			<exit code="any" />
+		</install>
+		
+		<!-- Patching the application (uncomment if needed) -->
+		<install cmd='%COMSPEC% /c xcopy "%SOFTWARE%\Qfiniti\Qfiniti_%SYS_VERSION%\_%PKG_VERSION%_Roll_Up_02_01_2021\Client\Observe\Qfiniti Desktop" "%SYS_CONFIG_FOLDER_1" /r /y /e /i /s /c' />
+
+		<!-- Patching the ICE folder (uncomment if needed) -->
+		<!-- <install cmd='%COMSPEC% /c xcopy "%SOFTWARE%\Qfiniti\QU_Roll_Up_08_01_2018_Observe_Client_10.5\ICE\Client" "%SYS_CONFIG_FOLDER_2" /r /y /e /i /s /c' /> -->
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+	
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" /> 
+		<!-- In case QF_roll_up client copying is needed on downgrade, uncomment and adjust the paths -->
+		<!-- <downgrade cmd='%COMSPEC% /c xcopy "%SOFTWARE%\Qfiniti\Qfiniti_%SYS_VERSION%\_%PKG_VERSION%_Roll_Up_02_01_2021\Client\Observe\Qfiniti Desktop" "%sys_config_folder" /r /y /e /i /s /c' /> -->
+
+		<!-- DEINSTALLATION -->
+		<!-- End current related processes -->
+		<remove cmd='%COMSPEC% /c taskkill /f /t /im qAME.exe'>
+			<exit code="any" />
+		</remove>
+		<remove cmd='%COMSPEC% /c taskkill /f /t /im AgentMonitorConsole.exe'>
+			<exit code="any" />
+		</remove>
+		<!-- This one is needed in case of using ICE server -->
+		<install cmd='%COMSPEC% /c taskkill /f /t /im AutoLink.exe'>
+			<exit code="any" />
+		</install>
+		<!-- Deinstall -->
+		<remove cmd='msiexec /qn /X%UNINSTALL_STRING%'/> 
+		<!-- Delete patch folder -->
+		<remove cmd='%COMSPEC% /C IF EXIST "%PROGFILES%\Qfiniti\Qfiniti Desktop" RMDIR /S /Q "%PROGFILES%\Qfiniti\Qfiniti Desktop"'/>
+
+	</package>
+
+</packages:packages>
