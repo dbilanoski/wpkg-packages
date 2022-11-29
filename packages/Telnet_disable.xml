@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+  xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+  <package
+    id="telnet-removal"
+    name="Telnet Removal Service Package"
+    revision="%sys_version%"
+    reboot="false"
+    priority="1">
+
+		<!-- CONFIGURATION VARIABLES -->
+    <variable name="sys_version" value="1.0.0" />
+
+		<!-- VALIDATION -->	
+    <check type="file" condition="exists" path="C:\Program Files\Telnet_Removal_%sys_version%.txt" />
+
+		<!-- INSTALLATION -->
+ 		<install cmd='%COMSPEC% /C DISM /online /disable-feature /featurename:TelnetClient' />
+    <!-- Create custom validation checker  -->
+    <install cmd='%COMSPEC% /C echo DO NOT DELETE - TELNET REMOVAL VALIDATION > "C:\Program Files\Telnet_Removal_%sys_version%.txt"' />
+	
+		<!-- UPGRADE -->
+    <upgrade include="remove" />
+    <upgrade include="install" />
+
+		<!-- REMOVAL -->
+    <remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\Telnet_Removal_*.txt"' />
+		
+	</package>
+
+</packages:packages>

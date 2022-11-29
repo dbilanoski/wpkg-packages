@@ -1,0 +1,103 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+        xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+    <package
+		id="microsip"
+		name="MicroSIP Portable"
+		revision="%sys_version%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+
+			NOTES
+				Since the app does not support:
+					* silent/unattended installation
+					* configuration via cli args during installation
+					* machine wide installation (goes only for the current user)
+
+				we go with the portable solution and the selfcare batch script where:
+ 					* we have separate microsip wpkg package for each campaign (different configuration)
+					* users get a one-click solution to get the preconfigured app in his own context
+				
+			INSTALLATION LOGIC:
+				* Wpkg package will copy the app and the config ini to central location on target pc (C:\Program files\MicroSip_version)
+				* Wpkg package will copy the selfcare install_MicroSIP batch file to C:\Users\Public\Desktop so each user on computer has it
+				* Then user is instructed to execute the install_MicroSIP batch script from his desktop which will:
+					* Copy preconfigured app from Program Files to %UserProfile%\AppData\Local\MicroSIP_version
+					* Create a shorcut on his desktop which he after uses to run the preconfigured application
+
+					* Batch script used here:
+							REM SCRIPT START
+							@echo off
+							xcopy "C:\Program Files\MicroSIP-3.20.5" "%UserProfile%\AppData\Local\MicroSIP-3.20.5" /s /i /y
+
+							set TARGET='%UserProfile%\AppData\Local\MicroSIP-3.20.5_A1\microsip.exe'
+							set SHORTCUT='%UserProfile%\Desktop\MicroSIP.lnk'
+							set PWS=powershell.exe -ExecutionPolicy Bypass -NoLogo -NonInteractive -NoProfile
+
+							%PWS% -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut(%SHORTCUT%); $S.TargetPath = %TARGET%; $S.Save()"
+
+							echo Installation Complete. Please run MicroSIP from desktop icon "MicroSIP". 
+							pause
+							REM SCRIPT STOP
+
+			TODO
+				* On removal, loop over each user's AppData and Desktop and delete all instances of the app and shortcuts
+			
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="1.0.0" />
+        
+		<!-- VALIDATION -->
+		<check type="file" condition="exists" path="C:\Program Files\MicroSIP-3.20.5_A1\microsip_wpkg_validation_%SYS_VERSION%.txt" />
+
+		<!-- INSTALLATION -->
+		<!-- Copy App & Config files  -->
+    <install cmd='%COMSPEC% /C robocopy "%SOFTWARE%\MicroSIP\3.20.5" "C:\Program Files\MicroSIP-3.20.5"'>
+      <exit code="0" />
+      <exit code="1" />
+      <exit code="2" />
+      <exit code="3" />
+      <exit code="5" />
+    </install>
+
+		<!-- Copy Selfcare Batch file for all users to have it on desktop  -->
+		<install cmd='%COMSPEC% /c xcopy "%SOFTWARE%\MicroSIP\3.20.5\install_MicroSIP.bat" "C:\Users\Public\Desktop\" /cqiy' />
+
+		<!-- Create custom validation checker  -->
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - WPKG VALIDATION FOR MICROSIP PACKAGE > "C:\Program Files\MicroSIP-3.20.5\microsip_wpkg_validation_%SYS_VERSION%.txt"' />
+		
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+		
+		<!-- DEINSTALLATION -->	
+		<!-- Delete App & Config files  -->
+		<remove cmd='%COMSPEC% /c RMDIR "C:\Program Files\MicroSIP-3.20.5" /s /q' >
+			<exit code="any" />
+		</remove>
+
+		<!-- Delete Selfcare Batch file on all users's desktop  -->
+		<remove cmd='%COMSPEC% /c DEL /Q "C:\Users\Public\Desktop\install_MicroSI.bat"' >
+			<exit code="any" />
+		</remove>
+
+		<!-- Delete custom validation checker  -->
+		<remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\MicroSIP-3.20.5\microsip_wpkg_validation*.txt"' >
+			<exit code="any" />
+		</remove>
+		
+		<!-- TODO: Loop over each user's AppData and Desktop and delete all instances of the app and shortcuts  -->
+				<!-- <install cmd='%comspec% START "Delete" FOR /D %%A IN (C:\Users\*) DO RMDIR "%%A\AppData\AppData\Local\MicroSIP-3.20.5" /s /q' /> -->
+
+	</package>
+
+</packages:packages>

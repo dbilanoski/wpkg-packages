@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="teamsip2go"
+		name="TeamSIP 2go"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="29">
+
+		<!-- 
+
+			NOTES:
+				* Application info: https://www.teamfon.com/loesungen/softphone-app
+				* If you gonna use .iss settings file, update the APP_CONFIG_FILE variable with path to your file
+				* If you not going to use .iss settings file, remove /f1"%APP_CONFIG_FILE%" from the installation script
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="4.0.150" />
+		<variable name="APP_CONFIG_FILE" value="%SOFTWARE%\TeamSIP2go\TeamSIP2go.iss" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="TeamSIP 2go" value="%SYS_VERSION%" />
+
+ 		<!-- INSTALLATION -->
+		<!-- End current related processes -->
+		<install cmd='C:\Windows\System32\taskkill.exe /F /IM "TeamSIP 2go.exe"'>
+			<exit code="any" />
+		</install>
+
+		<!-- Uninstall something older in case it's already on the system -->
+		<install cmd='wmic product where "name like "TeamSIP%%"" call uninstall'> 
+			<exit code="any" />
+		</install>
+
+		<!-- Install the app -->
+		<install cmd='%SOFTWARE%\TeamSIP2go\TeamSIP2go_40150.exe /s /f1"%APP_CONFIG_FILE%" /f2"C:\TeamSIP2go.log"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+    <downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='wmic product where "name like "TeamSIP%%"" call uninstall' /> 
+
+	</package>
+
+</packages:packages>

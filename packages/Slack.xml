@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="slack"
+		name="Slack"
+		revision="%sys_version%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+		
+			NOTE:
+				* For this to be working you will need a "machine wide" installer
+				*	https://slack.com/help/articles/212475728-Deploy-Slack-via-Microsoft-Installer
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="sys_version" value="4.12.2.0" />
+
+		<!-- VALIDATION -->
+    <check type="uninstall" condition="versiongreaterorequal" path="Slack Machine-Wide" value="%sys_version%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='msiexec /i "\\shrosvfile02\wpkg$\software\Slack\slack-standalone-%sys_version%.msi" /qn /norestart' />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+    <downgrade include="install" />
+
+    <!-- DEINSTALLATION -->
+		<remove cmd='wmic product where "name like &apos;Slack%%&apos;" call uninstall' />
+		
+	</package>
+</packages:packages>

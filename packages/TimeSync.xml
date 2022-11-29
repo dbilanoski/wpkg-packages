@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="time-sync"
+		name="Push Time Sync"
+		revision="%sys_version%"
+		reboot="false"
+		priority="1">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="sys_version" value="1.0.1" />
+
+		<!-- VALIDATION -->
+		<check type="file" condition="exists" path="C:\Program Files\TIMESYNCER_%sys_version%.txt" />
+		
+		<!-- INSTALLATION -->
+		<install cmd='%COMSPEC% /C w32tm /resync' />
+		<!-- Create custom validation checker  -->
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - TIMESYNCER VALIDATION > "C:\Program Files\TIMESYNCER_%sys_version%.txt"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\TIMESYNCER_*.txt"' />
+		
+	</package>
+
+</packages:packages>

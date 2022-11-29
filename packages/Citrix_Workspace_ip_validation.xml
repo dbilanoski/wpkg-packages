@@ -20,13 +20,12 @@
 					* if no, it will exit with 501 (means users is not on internal network)
 
 			WPKG package logic:
+				* If user is on RAVPN, package will be downloaded from %DL_LINK_*% then installed (validation script returned 501) 
 				* If user is on internal network, package will install from local file server (validation script returned 500)
-				* If user is on RAVPN, package will be downloaded from %DL_LINK_1% and installed (validation script returned 501)
 			
-			NOTE: you might get unsuccessfull install for on-site users as the sofware will install from local server (exit 500) but then try to install from download location anyways
-				* reason for that is that the <condition> tag only affects the direct parent tag (<download>), not the whole nested stack
-				* because of that, download won't happen in case of exit 501, but install will and will exit as there is no downloaded file in %DL_TARGET_1%
-				* Just have users reapeat the wpkg-gp update/sync again. Sofware will already be installed and wpkg will write it as "already installed"
+			NOTE 
+				* Since the <condition> tag only affects the direct parent tag, not the whole nested stack, using conditioned download under install (install > download > condition ) is not preferable as it returns error
+			 	* This is why in this approach we have download performed under install tag
 
 			TODO:
 				* (New-Object System.Net.WebClient).DownloadFile($url, $path_to_file)
