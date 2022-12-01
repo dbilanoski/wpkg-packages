@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="yubico"
+		name="Yubico Authenticator"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="10">
+
+		<!-- 
+
+				NOTES
+					* About page: https://www.yubico.com/products/yubico-authenticator/
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="5.0.5" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+		<variable name="UNINSTALL_STRING" value="{C4938DCC-540E-43DB-BDC2-962A94308617}" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Yubico Authenticator" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='msiexec /i "%SOFTWARE%\YubicoAuthenticator\yubioath-desktop-%PKG_VERSION%-win64.msi" /quiet /norestart' />
+		
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd="msiexec /qb! /uninstall %UNINSTALL_STRING%" />
+		
+	</package>
+
+</packages:packages>

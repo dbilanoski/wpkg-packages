@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="vnc-viewer"
+		name="TightVNC Viewer"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="2.7.10" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.0" />
+		<variable name="UNINSTALL_STRING" value="{D2372F87-7DA2-47F7-A102-AF2181B8EAA2}" />
+		<variable name="INSTALL_ARGS" value="/qn /norestart ADDLOCAL=Viewer VIEWER_ASSOCIATE_VNC_EXTENSION=1 VIEWER_ADD_FIREWALL_EXCEPTION=1" />
+        
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="TightVNC" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<!-- For x32 systems -->
+		<install cmd='msiexec /i %SOFTWARE%\VNC\tightvnc-%PKG_VERSION%-setup-32bit.msi %INSTALL_ARGS%'>
+			<condition>
+				<check type="host" condition="architecture" value="x86" />
+			</condition>
+		</install>
+
+		<!-- For x64 systems -->
+		<install cmd='msiexec /i %SOFTWARE%\VNC\tightvnc-%PKG_VERSION%-setup-64bit.msi %INSTALL_ARGS%'>
+			<condition>
+				<check type="host" condition="architecture" value="x64" />
+			</condition>
+		</install>
+    
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='msiexec /qb /x %UNINSTALL_STRING%' /> 
+		
+	</package>
+</packages:packages>

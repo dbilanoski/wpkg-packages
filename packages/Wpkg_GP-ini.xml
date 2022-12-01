@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="wpkg-gp-inis"
+		name="Wpkg-GP Deploy INI files"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="98">
+
+		<!-- 
+
+				NOTES
+					* This is useful when migrating from one wpkg server share to another
+					* It will copy new configuration files both for WPKG-GP and WPKG-GP Client applications
+					* Don't forget to update %NEW_WPKG_CONFIG_FILE% and %NEW_WPKG_CLIENT_CONFIG_FILE% paths so they point to your new config files
+
+		 -->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="1.0.0" />
+		<variable name="NEW_WPKG_CONFIG_FILE" value="\\10.130.8.71\wpkg\HROS\software\Wpkg_Setup\Wpkg_Client\Wpkg-GP\wpkg-gp.ini" />
+		<variable name="NEW_WPKG_CLIENT_CONFIG_FILE" value="\\10.130.8.71\wpkg\HROS\software\Wpkg_Setup\Wpkg_Client\Wpkg-GP Client\wpkg-gp_client.ini" />
+
+		<!-- VALIDATION -->
+		<check type="file" condition="exists" path="C:\Program Files\Wpkg_GP_ini_%SYS_VERSION%.txt" />
+		 
+		<!-- INSTALLATION -->
+		<!-- Copy wpkg-gp configuration file -->
+		<install cmd='%COMSPEC% /C echo F | XCOPY "%NEW_WPKG_CONFIG_FILE%" "C:\Program Files\Wpkg-GP\Wpkg-GP.ini " /y /e /i /s /c' />
+		<!-- Copy wpkg-gp client configuration file -->
+		<install cmd='%COMSPEC% /C echo F | XCOPY "NEW_WPKG_CLIENT_CONFIG_FILE" "C:\Program Files (x86)\WPKG-GP Client\wpkg-gp_client.ini " /y /e /i /s /c' />
+		
+		<!-- Create custom validatin file to check if the package is applied-->
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - WPKG GP COPY INI FILES > "C:\Program Files\Wpkg_GP_ini_%SYS_VERSION%.txt"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\Wpkg_GP_ini_*.txt"' />
+		
+	</package>
+
+</packages:packages>

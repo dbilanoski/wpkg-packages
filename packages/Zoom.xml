@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="zoom"
+		name="Zoom"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+
+				NOTES
+					* For this, you will need full installer (Zoom desktop client for meetings, see link below)
+					* Download page: https://support.zoom.us/hc/en-us/articles/207373866-Zoom-Installers
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="5.6.961" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
+		<variable name="UNINSTALL_STRING" value="{4AD34355-1E57-4CF5-B6E4-D7982D283E4B}" />
+
+		<!-- VALIDATION -->	
+		<check type="uninstall" condition="versiongreaterorequal" path="Zoom" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='msiexec /i "%SOFTWARE%\Zoom\ZoomInstallerFull.msi" /quiet /qn /norestart /log c:\zoom.log' />
+		
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+		
+		<!-- DOWNGRADE -->	
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd="msiexec /qb! /uninstall %UNINSTALL_STRING%" />
+		
+	</package>
+
+</packages:packages>

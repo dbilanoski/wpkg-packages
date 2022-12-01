@@ -17,6 +17,7 @@
 				* Application info: https://www.teamfon.com/loesungen/softphone-app
 				* If you gonna use .iss settings file, update the APP_CONFIG_FILE variable with path to your file
 				* If you not going to use .iss settings file, remove /f1"%APP_CONFIG_FILE%" from the installation script
+				* Deinstallation is not reliable so you might need manual cleanup
 
 		-->
 
@@ -50,7 +51,13 @@
     <downgrade include="install" />
 
 		<!-- DEINSTALLATION -->
-		<remove cmd='wmic product where "name like "TeamSIP%%"" call uninstall' /> 
+		<remove cmd='wmic product where "name like "TeamSIP%%"" call uninstall' >
+			<exit code="any" />
+		</remove> 
+
+		<remove cmd='C:\Program Files (x86)\InstallShield Installation Information\{B303639A-2CDF-42A1-8532-0E3338CE5A6D}\setup.exe /s"' >
+			<exit code="any" /> 
+		</remove> 
 
 	</package>
 

@@ -23,7 +23,7 @@
 		<variable name="sys_version" value="4.12.2.0" />
 
 		<!-- VALIDATION -->
-    <check type="uninstall" condition="versiongreaterorequal" path="Slack Machine-Wide" value="%sys_version%" />
+		<check type="uninstall" condition="versiongreaterorequal" path="Slack Machine-Wide" value="%sys_version%" />
 
 		<!-- INSTALLATION -->
 		<install cmd='msiexec /i "\\shrosvfile02\wpkg$\software\Slack\slack-standalone-%sys_version%.msi" /qn /norestart' />

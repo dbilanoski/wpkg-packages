@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="kee-pass"
+		name="KeePass Password Safe 2"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!--
+			
+			NOTES:
+				* App wiki: https://keepass.info/help/v2/setup.html
+				* Additional info: https://silentinstallhq.com/keepass-password-safe-silent-install-how-to-guide/
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="2.50" />
+		<variable name="INSTALL_ARGS" value="/VERYSILENT" />
+        
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="KeePass Password Safe .*" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='%SOFTWARE%\Keepass\KeePass-%SYS_VERSION%-Setup.exe %INSTALL_ARGS%' />
+		<!-- Copy additional forced configuration to prevent auto update -->
+		<install cmd='%COMSPEC% /C COPY "%SOFTWARE%\Keepass\KeePass.config.enforced.xml" "%ProgramFiles%\KeePass Password Safe 2" /Y' />
+
+		<!-- UPGRADE -->  
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->  
+		<downgrade include="remove" />
+	  <downgrade include="install" />
+	  
+		<!-- DEINSTALLATION --> 
+		<remove cmd='"C:\Program Files\KeePass Password Safe 2\uninst000.exe" /VERYSILENT' /> 
+
+		<!-- In case of update -->
+		<remove cmd='"C:\Program Files\KeePass Password Safe 2\uninst001.exe" /VERYSILENT' >
+			<condition>
+				<check type="file" condition="exists" path="C:\Program Files\KeePass Password Safe 2\uninst001.exe" />
+			</condition>
+		</remove> 
+		
+	</package>
+</packages:packages>

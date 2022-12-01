@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="wpkg-gp-client"
+		name="WPKG-GP Client"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="99" >
+
+		<!-- 
+			
+			NOTES
+				* About page: https://github.com/sonicnkt/wpkg-gp-client
+				* Make sure to update you %CLIENINI% path to the configuration file
+				
+		-->
+
+		<!-- EXPLICIT WPKG DEPENDENCIES -->
+		<depends package-id="Wpkg-gp" />
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="0.9.7.4" />
+		<variable name="CLIENTINI" value="%SOFTWARE%\Wpkg_Setup\Wpkg_Client\Wpkg-GP Client\wpkg-gp_client.ini" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="WPKG-GP Client" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='"%SOFTWARE%\Wpkg_Setup\Wpkg_Client\Wpkg-GP Client\wpkg-gp-client_v%SYS_VERSION%.exe" /verysilent /norestart /SUPPRESSMSGBOXES /RESTARTEXITCODE=101 /ini="%CLIENTINI%"'>
+				<exit code="0" />
+				<exit code="101" reboot="postponed" />
+		</install>
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%COMSPEC% /C "%PROGRAMFILES(X86)%\WPKG-GP Client\unins000.exe" /silent' />  
+
+	</package>
+
+</packages:packages>

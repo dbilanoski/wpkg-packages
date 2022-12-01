@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="vmware-horizon"
+		name="VMWare Horizon Client"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="8.1.0" />
+		<variable name="PKG_BUILD" value="17349995" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.15949" />
+		<variable name="UNINSTALL_STRING" value="{48F41C97-B35C-4B53-93A4-7A2E44ACDA58}" />
+		<variable name="INSTALL_ARGS" value="/silent /norestart VDM_Server=your-server-name-or-ip" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="VMware Horizon Client" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='%SOFTWARE%\VMwareHorizonClient\VMware-Horizon-Client-2012-%PKG_VERSION%-%PKG_BUILD%.exe %INSTALL_ARGS% /log "C:\vmware_horizon.txt"' />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%SOFTWARE%\VMwareHorizonClient\VMware-Horizon-Client-2012-%PKG_VERSION%-%PKG_BUILD%.exe /silent /uninstall' />
+
+	</package>
+</packages:packages>

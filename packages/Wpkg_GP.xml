@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="wpkg-gp"
+		name="Wpkg-GP"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="100">
+
+		<!-- 
+			
+			NOTES
+				* About page: https://wpkg.org/WPKG-GP
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="PKG_VERSION" value="0.17" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.17" />
+		<variable name="INSTALL_ARGS" value="/S /INI %SOFTWARE%\Wpkg_Setup\Wpkg_Client\Wpkg-GP\wpkg-gp.ini" />
+		<variable name="ARCHITECTURE" value="x86" architecture="x86" />
+		<variable name="ARCHITECTURE" value="x64" architecture="x64" />
+      
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Wpkg-GP %SYS_VERSION% .*" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<!-- In case there is an older client in the system, uninstall -->
+		<install cmd='wmic product where name="WPKG" call uninstall' >
+			<condition>
+				<check type="uninstall" condition="exists" path="WPKG" />
+			</condition>
+		</install>
+
+		<!-- Install the app -->
+		<install cmd='"%SOFTWARE%\Wpkg_Setup\Wpkg_Client\Wpkg-GP\Wpkg-GP-%SYS_VERSION%_%ARCHITECTURE%.exe" %INSTALL_ARGS%"'>
+			<exit code="3010" reboot="delayed" />
+		</install>
+		
+		<!-- Copy configuration -->
+		<install cmd='%COMSPEC% /c copy /Y "%SOFTWARE%\Wpkg_Setup\Wpkg_Client\Wpkg-GP\wpkg-gp.ini" "%PROGRAMFILES%\WPKG-GP\Wpkg-gp.ini" '/>
+
+		<!-- UPGRADE -->
+	  <upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+    <remove cmd='%COMSPEC% /C "%ProgramFiles%\WPKG-GP\uninstall.exe" /S' /> 
+
+	</package>
+
+</packages:packages>
