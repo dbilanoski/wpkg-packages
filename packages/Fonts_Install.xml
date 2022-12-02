@@ -5,8 +5,8 @@
 	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
 
 	<package
-		id="fonts-t2ger"
-		name="Tele2 Germany Official Fonts"
+		id="wpkg-fonts"
+		name="Fonts Installation"
 		revision="%SYS_VERSION%"
 		reboot="false"
 		priority="10">
@@ -29,7 +29,7 @@
 
 		<!-- INSTALLATION -->
 		<install cmd='%COMSPEC% /C powershell -executionpolicy bypass -NoProfile -NonInteractive -command "&amp; {Start-Process PowerShell -ArgumentList 	&apos;-NoProfile -NonInteractive -ExecutionPolicy Unrestricted -File ""%SOFTWARE\scripts\fonts_install.ps1""&apos; -Verb RunAs}"' />
-		<install cmd='%COMSPEC% /C echo DO NOT DELETE - T2 Germany Official Fonts Installation VALIDATOR > "C:\Program Files\Fonts_validator_%SYS_VERSION%.txt"' />
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - WPKG Fonts Installation Validator > "C:\Program Files\Fonts_validator_%SYS_VERSION%.txt"' />
 
 		<!-- UPGRADE -->
 		<upgrade include="remove" />

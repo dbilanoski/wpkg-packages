@@ -22,8 +22,8 @@
 
 		<!-- CONFIGURATION VARIABLES -->
 		<variable name="SYS_VERSION" value="1.0.0" />
-		<variable name="NEW_WPKG_CONFIG_FILE" value="\\10.130.8.71\wpkg\HROS\software\Wpkg_Setup\Wpkg_Client\Wpkg-GP\wpkg-gp.ini" />
-		<variable name="NEW_WPKG_CLIENT_CONFIG_FILE" value="\\10.130.8.71\wpkg\HROS\software\Wpkg_Setup\Wpkg_Client\Wpkg-GP Client\wpkg-gp_client.ini" />
+		<variable name="NEW_WPKG_CONFIG_FILE" value="\\your-path-to-the-new-share\Wpkg-GP\wpkg-gp.ini" />
+		<variable name="NEW_WPKG_CLIENT_CONFIG_FILE" value="\\your-path-to-the-new-share\Wpkg-GP Client\wpkg-gp_client.ini" />
 
 		<!-- VALIDATION -->
 		<check type="file" condition="exists" path="C:\Program Files\Wpkg_GP_ini_%SYS_VERSION%.txt" />
