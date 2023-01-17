@@ -20,6 +20,7 @@
 			# NOTES
 		
 			Dependencies for this are:
+				* NET Framework 3.5
 				* Visual C++ 2017 x86 Update 4 
 					- Covered by the Visual C++ 2015-2019 package
 			 	* Visual C++ 2005 8.0.56336

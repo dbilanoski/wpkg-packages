@@ -15,9 +15,10 @@
 			This package relies on ip address validation script here: https://github.com/dbilanoski/wpkg-packages/blob/main/assets/wpkg_ip_validator.ps1
 
 			Script logic:
-				* Script will check if you current IP address is in the range of you internal supernet
+				* Script will check if you current IP address is in the range of you internal supernet (IP_SITE_SUPERNET variable)
 					* if yes, it will exit with 500 (means user is on internal network)
 					* if no, it will exit with 501 (means users is not on internal network)
+					* exit code 2 means you provided empty or wrong formatted ip address with -ip argument
 
 			WPKG package logic:
 				* If user is on RAVPN, package will be downloaded from %DL_LINK_*% then installed (validation script returned 501) 
@@ -36,6 +37,7 @@
 		<variable name="PKG_VERSION" value="22.3.1.41" />
 		<variable name="SYS_VERSION" value="%PKG_VERSION%" />
 		<variable name="IP_VALIDATION_SCRIPT" value="%SOFTWARE%\scripts\ip_validator.ps1" />
+		<variable name="IP_SITE_SUPERNET" value="your.site.ip.supernet" />
 		<variable name="DL_SOURCE1" value="https://your-download-link/CitrixWorkspaceApp.exe" /> 
 		<variable name="DL_TARGET1" value="C:\Users\Public\Downloads\CitrixWorkspaceApp_%PKG_VERSION%.exe" />
 				
@@ -47,7 +49,7 @@
 		<install cmd='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -command "&#038; Invoke-WebRequest -Uri %DL_SOURCE1% -OutFile %DL_TARGET1%"'>
 			<condition>
 				<check type="logical" condition="and" >
-					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %IP_VALIDATION_SCRIPT%" condition="exitcodeequalto" value="501" />
+					<check type="execute" path='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File "%IP_VALIDATION_SCRIPT%" -ip %IP_SITE_SUPERNET%' condition="exitcodeequalto" value="501" />
 					<check type="logical" condition="not" >
 						<check type="file" condition="exists" path="%DL_TARGET1%" />
 					</check>
@@ -65,7 +67,7 @@
 			<condition>
 				<check type="logical" condition="or" >
 					<check type="file" condition="exists" path="%DL_TARGET1%" />
-					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %IP_VALIDATION_SCRIPT%" condition="exitcodeequalto" value="501" />
+					<check type="execute" path='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File "%IP_VALIDATION_SCRIPT%" -ip %IP_SITE_SUPERNET%' condition="exitcodeequalto" value="501" />
 				</check>
 			</condition>
 			<exit code="0" />
@@ -76,7 +78,7 @@
 		<install cmd='%SOFTWARE%\CitrixWorkspace\LTSR\%SYS_VERSION%\CitrixWorkspaceApp.exe /silent /forceinstall /AutoUpdateCheck=disabled /EnableCEIP=false'>
 			<condition>
 				<check type="logical" condition="and" >
-					<check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File %IP_VALIDATION_SCRIPT%" condition="exitcodeequalto" value="500" />
+					<check type="execute" path='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File "%IP_VALIDATION_SCRIPT%" -ip %IP_SITE_SUPERNET%' condition="exitcodeequalto" value="500" />
 					<check type="logical" condition="not" >
 						<check type="file" condition="exists" path="%DL_TARGET1%" />
 					</check>

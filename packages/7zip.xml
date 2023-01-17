@@ -14,13 +14,13 @@
     <!-- CONFIGURATION VARIABLES -->
     <variable name="PKG_VERSION" value="2201" />
     <variable name="SYS_VERSION" value="22.01" />
-    <variable name="INSTALL_ARGS" value="/i /qn /norestart" />
+    <variable name="INSTALL_ARGS" value="/qn /norestart" />
 
     <!-- VALIDATION -->
-    <check type="uninstall" condition="exists" path="7-Zip %SYS_VERSION% (x64)" />
+    <check type="uninstall" condition="exists" path="7-Zip %SYS_VERSION% .*" />
 
      <!-- INSTALLATION -->
-    <install cmd='msiexec %INSTALL_ARGS% %SOFTWARE%\7zip\7z%PKG_VERSION%-x64.msi' architecture="x64" />
+    <install cmd='msiexec /i %SOFTWARE%\7zip\7z%PKG_VERSION%-x64.msi %INSTALL_ARGS%' architecture="x64" />
 		
 		<!-- 
 			This fixes file associations in Windows.

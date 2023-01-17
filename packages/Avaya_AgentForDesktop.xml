@@ -12,7 +12,7 @@
 		priority="65">
 
 		<!-- CONFIGURATION VARIABLES -->
-		<variable name="SYS_VERSION" value="2.0.6.16.3004" />
+		<variable name="SYS_VERSION" value="2.0.6.24.3002" />
 		<variable name="INSTALL_ARGS" value='/VERYSILENT /INSTALLEXTENSIONS /LOADINF="%SOFTWARE%\AvayaAgentForDesktop\setup_settings.inf" /LOG="C:\AvayaForDesktop.txt"' />
 
 		<!-- VALIDATION -->

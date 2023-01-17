@@ -73,6 +73,9 @@ as a condition provided under the wpkg install tag, such as in a dummy example b
   * You can add folders to the path (eg. TARG_STRING1 value ="appname\app.exe", this will download file to %TEMP%\appname\app.exe)
 * INSTALL_ARGS - Installation command line arguments (switches) (if used)
 * PS_SCRIPT - Path to the PowerShell with arugments for bypassing the Execution Policy and calling external ps1 file intened to ease the usage of external powershell scripts (if used)
+* *_SCRIPT - Any kind of external PowerShell script used as a tool
+* IP_SITE_SUPERNET - Your supernet ipv4 address (eg. 10.191.0.0)
+  * Usualy this is used by external script to validate the computer ip address
 
 #### Revision
 SYS_VERSION variable is used as a revision. This way, change in the software version variable triggers the appropriate installation action.
@@ -124,4 +127,4 @@ Always use debugging to check the procedural execution of your setup.
 ## ToDo
 - [x] Initial draft, readme file
 - [x] Templates for MSI and EXE both with and without IP validation
-- [ ] Revise existing packages
+- [x] Revise existing packages

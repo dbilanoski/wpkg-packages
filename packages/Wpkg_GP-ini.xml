@@ -32,7 +32,7 @@
 		<!-- Copy wpkg-gp configuration file -->
 		<install cmd='%COMSPEC% /C echo F | XCOPY "%NEW_WPKG_CONFIG_FILE%" "C:\Program Files\Wpkg-GP\Wpkg-GP.ini " /y /e /i /s /c' />
 		<!-- Copy wpkg-gp client configuration file -->
-		<install cmd='%COMSPEC% /C echo F | XCOPY "NEW_WPKG_CLIENT_CONFIG_FILE" "C:\Program Files (x86)\WPKG-GP Client\wpkg-gp_client.ini " /y /e /i /s /c' />
+		<install cmd='%COMSPEC% /C echo F | XCOPY "%NEW_WPKG_CLIENT_CONFIG_FILE%" "C:\Program Files (x86)\WPKG-GP Client\wpkg-gp_client.ini " /y /e /i /s /c' />
 		
 		<!-- Create custom validatin file to check if the package is applied-->
 		<install cmd='%COMSPEC% /C echo DO NOT DELETE - WPKG GP COPY INI FILES > "C:\Program Files\Wpkg_GP_ini_%SYS_VERSION%.txt"' />

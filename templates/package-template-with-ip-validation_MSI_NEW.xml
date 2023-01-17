@@ -1,15 +1,14 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<packages:packages
-	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+<packages:packages xmlns:packages="http://www.wpkg.org/packages"
+	xmlns:wpkg="http://www.wpkg.org/wpkg"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd">
 
-  <package 
-	 	id="chrome-n"
-		name="Google Chrome"
-		revision="%SYS_VERSION%"
-		reboot="false"
-		priority="30">
+	<package id='your-package-id' 
+		name='Name Of The Software' 
+		revision="%SYS_VERSION%" 
+		priority='30' 
+		reboot='false' >
 
 		<!-- 
 			This package relies on ip address validation script here: https://github.com/dbilanoski/wpkg-packages/blob/main/assets/wpkg_ip_validator.ps1
@@ -31,19 +30,25 @@
 			TODO:
 				* (New-Object System.Net.WebClient).DownloadFile($url, $path_to_file) for downloading
 				- for testing later, it performs better, writes files directly to file system and might be better supported
+
+			Useful points:
+				* Check available MSI switches by CMD, then executing msiexec /?
+					* this will show all available switches so you can plan your installation and deinstallation
 		-->
 
-		<!-- CONFIGURATION VARIABLES -->
-		<variable name="SYS_VERSION" value="102.0.5005.115" />
-		<variable name="UNINSTALL_STRING" value="{B24F0A95-6C38-3CA4-AFC8-7BDD38B8C51D}" />
-		<variable name="IP_VALIDATION_SCRIPT" value="\\your-path-to-the-ip-validation-script\ip_validator.ps1" />
+		<!-- VARIABLES -->
+		<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
+		<variable name="UNINSTALL_STRING" value="{application-pd-code}" />
+		<variable name="IP_VALIDATION_SCRIPT" value="\\your-path-to-ip-validator-script\ip_validator.ps1" />
 		<variable name="IP_SITE_SUPERNET" value="your.site.ip.supernet" />
-		<variable name="DL_SOURCE_1" value="https://your-download-link/googlechromestandaloneenterprise64_102.0.5005.115.msi" />
-		<variable name="DL_TARGET_1" value="C:\Users\Public\Downloads\googlechromestandaloneenterprise64_102.0.5005.115.msi" />
-		<variable name="INSTALL_ARGS" value="/qn /norestart" />
+		<variable name="DL_SOURCE_1" value="https://public-repo-link-of-the-application/application.msi" />
+		<variable name="DL_TARGET_1" value="C:\Users\Public\Downloads\application-name.msi" />
+		<variable name="INSTALL_ARGS" value="/some-specific-msi-arguments-your-app-might-have" />
 
-    <!-- VALIDATION -->
-	  <check type="uninstall" condition="versiongreaterorequal" path="Google Chrome" value="%SYS_VERSION%" />
+		<!-- VALIDATION (if software is already installed) -->
+		<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
+
+		<!-- INSTALLATION PROCEDURE -->
 
 		<!-- Dowload from internet in case machine is off-site and file not already downloaded -->
 		<install cmd='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -command "&#038; Invoke-WebRequest -Uri %DL_SOURCE_1% -OutFile %DL_TARGET_1%"'>
@@ -68,7 +73,7 @@
 		</install>
 		
 		<!-- If download was not successfull (workstation is on-site), install from internal file server -->
-		<install cmd='msiexec /i "%SOFTWARE%\Chrome\googlechromestandaloneenterprise64.msi" %INSTALL_ARGS%'>
+		<install cmd='msiexec /i %SOFTWARE%\application-folder\application-name.msi %INSTALL_ARGS%'>
 			<condition>
 				<check type="logical" condition="and" >
 					<check type="execute" path='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File "%IP_VALIDATION_SCRIPT%" -ip %IP_SITE_SUPERNET%' condition="exitcodeequalto" value="500" />
@@ -79,26 +84,25 @@
 			</condition>
 		</install>
 
-		<!-- Delete shortcuts in Public folder -->
-		<install cmd='%comspec% IF EXIST "C:\Users\Public\Desktop\Google Chrome.lnk" DEL /q "C:\Users\Public\Desktop\Google Chrome.lnk"' />
 
-    <!-- UPGRADE -->
-    <upgrade cmd="taskkill /F /IM chrome.exe">
-			<exit code="any" />
-		</upgrade>
+		<!-- UPGRADE PROCEDURE -->
+		<!-- Check if your software handles upgrade without manual uninstallation. If not, uncomment remove inclusion below. -->
+		<upgrade include="remove" />
 		<upgrade include="install" />
 
-		<!-- DOWNGRADE -->
+		<!-- DOWNGRADE PROCEDURE -->
 		<downgrade include="remove" />
-		<downgrade include="upgrade" />
+		<downgrade include="install" />
 
-		<!-- DEINSTALLATION -->
-		<remove cmd="taskkill /F /IM chrome.exe">
+		<!-- UNINSTALL PROCEDURE -->
+		<remove cmd='msiexec /qn /X %UNINSTALL_STRING%' />
+
+		<!-- CLEANUP PROCEDURE-->
+		<!-- If you want to delete downloaded files (might be wise to leave them) -->
+		<remove cmd='%comspec% /c del %DL_TARGET1%'>
 			<exit code="any" />
 		</remove>
 
-    <remove cmd='wmic product where name="Google Chrome" call uninstall' />
+		</package>
 
-  </package>
-
-</packages:packages>
+	</packages:packages>

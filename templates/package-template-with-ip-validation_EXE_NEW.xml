@@ -1,15 +1,14 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
-<packages:packages
-	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+<packages:packages xmlns:packages="http://www.wpkg.org/packages"
+	xmlns:wpkg="http://www.wpkg.org/wpkg"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd">
 
-  <package 
-	 	id="chrome-n"
-		name="Google Chrome"
-		revision="%SYS_VERSION%"
-		reboot="false"
-		priority="30">
+	<package id='your-package-id' 
+		name='Name Of The Software' 
+		revision="%SYS_VERSION%" 
+		priority='30' 
+		reboot='false' >
 
 		<!-- 
 			This package relies on ip address validation script here: https://github.com/dbilanoski/wpkg-packages/blob/main/assets/wpkg_ip_validator.ps1
@@ -20,30 +19,34 @@
 					* if no, it will exit with 501 (means users is not on internal network)
 					* exit code 2 means you provided empty or wrong formatted ip address with -ip argument
 
+
 			WPKG package logic:
 				* If user is on RAVPN, package will be downloaded from %DL_LINK_*% then installed (validation script returned 501) 
 				* If user is on internal network, package will install from local file server (validation script returned 500)
 			
-			NOTE: 
-				* Since the <condition> tag only affects the direct parent tag, not the whole nested stack, using conditioned download under install (install > download > condition ) as in previous version is not preferable as it returns error
-			 	* This is why in this approach we have download performed under install tag
+			NOTE 
+				* Since the <condition> tag only affects the direct parent tag, not the whole nested stack, using conditioned download under install (install > download > condition, the old way ) is not preferable as it returns error
+			 	* This is why in this approach we have download performed as install tag
 
 			TODO:
-				* (New-Object System.Net.WebClient).DownloadFile($url, $path_to_file) for downloading
-				- for testing later, it performs better, writes files directly to file system and might be better supported
+				* (New-Object System.Net.WebClient).DownloadFile($url, $path_to_file)
+				- for testing later, it performs better and might be better supported
+
 		-->
 
-		<!-- CONFIGURATION VARIABLES -->
-		<variable name="SYS_VERSION" value="102.0.5005.115" />
-		<variable name="UNINSTALL_STRING" value="{B24F0A95-6C38-3CA4-AFC8-7BDD38B8C51D}" />
-		<variable name="IP_VALIDATION_SCRIPT" value="\\your-path-to-the-ip-validation-script\ip_validator.ps1" />
+		<!-- VARIABLES -->
+		<variable name="SYS_VERSION" value="system-version-as-seen-in-add-remove-programs" />
+		<variable name="UNINSTALL_STRING" value="{application-pd-code}" />
+		<variable name="IP_VALIDATION_SCRIPT" value="\\your-path-to-ip-validator-script\ip_validator.ps1" />
 		<variable name="IP_SITE_SUPERNET" value="your.site.ip.supernet" />
-		<variable name="DL_SOURCE_1" value="https://your-download-link/googlechromestandaloneenterprise64_102.0.5005.115.msi" />
-		<variable name="DL_TARGET_1" value="C:\Users\Public\Downloads\googlechromestandaloneenterprise64_102.0.5005.115.msi" />
-		<variable name="INSTALL_ARGS" value="/qn /norestart" />
+		<variable name="DL_SOURCE_1" value="https://public-repo-link-of-the-application/application-name.exe" />
+		<variable name="DL_TARGET_1" value="C:\Users\Public\Downloads\application-name.exe" />
+		<variable name="INSTALL_ARGS" value="/silent /norestart /others-you-can-check-by-running-exe-file-from-cmd-with-/?-switch" />
 
-    <!-- VALIDATION -->
-	  <check type="uninstall" condition="versiongreaterorequal" path="Google Chrome" value="%SYS_VERSION%" />
+		<!-- VALIDATION (if software is already installed) -->
+		<check type="uninstall" condition="versiongreaterorequal" path="software-string-as-shown-in-add-remove-programs %sys_version%" value="%sys_version%" />
+
+		<!-- INSTALLATION PROCEDURE -->
 
 		<!-- Dowload from internet in case machine is off-site and file not already downloaded -->
 		<install cmd='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -ExecutionPolicy Bypass -command "&#038; Invoke-WebRequest -Uri %DL_SOURCE_1% -OutFile %DL_TARGET_1%"'>
@@ -58,7 +61,7 @@
 		</install>
 
 		<!-- If download was successfull (workstation is not on-site) or file was already there, install from it -->
-		<install cmd='msiexec /i %DL_TARGET_1% %INSTALL_ARGS%'>
+		<install cmd='%DL_TARGET_1% %INSTALL_ARGS%'>
 			<condition>
 				<check type="logical" condition="or" >
 					<check type="file" condition="exists" path="%DL_TARGET_1%" />
@@ -68,7 +71,7 @@
 		</install>
 		
 		<!-- If download was not successfull (workstation is on-site), install from internal file server -->
-		<install cmd='msiexec /i "%SOFTWARE%\Chrome\googlechromestandaloneenterprise64.msi" %INSTALL_ARGS%'>
+		<install cmd='%SOFTWARE%\application-folder\application-name.exe %INSTALL_ARGS%'>
 			<condition>
 				<check type="logical" condition="and" >
 					<check type="execute" path='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File "%IP_VALIDATION_SCRIPT%" -ip %IP_SITE_SUPERNET%' condition="exitcodeequalto" value="500" />
@@ -79,26 +82,25 @@
 			</condition>
 		</install>
 
-		<!-- Delete shortcuts in Public folder -->
-		<install cmd='%comspec% IF EXIST "C:\Users\Public\Desktop\Google Chrome.lnk" DEL /q "C:\Users\Public\Desktop\Google Chrome.lnk"' />
 
-    <!-- UPGRADE -->
-    <upgrade cmd="taskkill /F /IM chrome.exe">
-			<exit code="any" />
-		</upgrade>
+		<!-- UPGRADE PROCEDURE -->
+		<!-- Check if your software handles upgrade without manual uninstallation. If not, uncomment remove inclusion below. -->
+		<upgrade include="remove" />
 		<upgrade include="install" />
 
-		<!-- DOWNGRADE -->
+		<!-- DOWNGRADE PROCEDURE -->
 		<downgrade include="remove" />
-		<downgrade include="upgrade" />
+		<downgrade include="install" />
 
-		<!-- DEINSTALLATION -->
-		<remove cmd="taskkill /F /IM chrome.exe">
+		<!-- UNINSTALL PROCEDURE -->
+		<remove cmd='wmic product where "name like "program-name%%"" call uninstall' />
+
+		<!-- CLEANUP PROCEDURE-->
+		<!-- If you want to delete downloaded files (might be wise to leave them) -->
+		<remove cmd='%comspec% /c del %DL_TARGET1%'>
 			<exit code="any" />
 		</remove>
 
-    <remove cmd='wmic product where name="Google Chrome" call uninstall' />
+		</package>
 
-  </package>
-
-</packages:packages>
+	</packages:packages>
