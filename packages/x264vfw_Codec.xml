@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="x264vfw"
+		name="x264vfw Codec"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="30">
+
+		<!-- 
+			
+			# x264vfw repository: https://sourceforge.net/projects/mpxplay/files/
+
+		-->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="1.0.0" />
+		<variable name="INSTALL_ARGS" value="/S" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="exists" path="x264vfw - H.264/MPEG-4 AVC codec for x64 (remove only)" />
+
+		<!-- INSTALLATION -->
+		<install cmd='%SOFTWARE%\Codecs\x264vfw\x264vfw_x64_v200_x264b159_10bit_20200321.exe %INSTALL_ARGS%' />
+
+		<!-- UPGRADE -->				
+		<upgrade include="remove" />
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->				
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->		
+		<remove cmd='"%PROGRAMFILES%\x264vfw64\x264vfw64-uninstall.exe" /S' />
+
+	</package>
+
+</packages:packages>

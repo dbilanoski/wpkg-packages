@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages xmlns:packages="http://www.wpkg.org/packages"
+	xmlns:wpkg="http://www.wpkg.org/wpkg"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd">
+
+	<package id='gcba' 
+		name='Genesys Cloud Background Assistant' 
+		revision="%SYS_VERSION%" 
+		priority='30' 
+		reboot='false' >
+
+		<!-- NOTES 
+			# About
+				* Overview: https://help.mypurecloud.com/articles/genesys-cloud-background-assistant-gcba-overview/
+				* Deployment details: https://help.mypurecloud.com/articles/deploy-genesys-cloud-background-assistant-gcba/
+		 -->
+
+		<!-- VARIABLES -->
+		<variable name="PKG_VERSION" value="1.0.160" />
+		<variable name="SYS_VERSION" value="%PKG_VERSION%.0" />
+		<variable name="INSTALL_ARGS" value="-install /quiet" />
+
+		<!-- VALIDATION (if software is already installed) -->
+		<check type="uninstall" condition="versiongreaterorequal" path="GenesysCloudBackgroundAssistant" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION PROCEDURE -->
+		<install cmd="%SOFTWARE%\Genesys_CBA\genesys-cloud-background-assistant-windows-%PKG_VERSION%.exe %INSTALL_ARGS%" />
+
+		<!-- UPGRADE PROCEDURE -->
+		<!-- Check if your software handles upgrade without manual uninstallation. If not, uncomment remove inclusion below. -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE PROCEDURE -->
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- UNINSTALL PROCEDURE -->
+		<remove cmd="%SOFTWARE%\Genesys_CBA\genesys-cloud-background-assistant-windows-%PKG_VERSION%.exe -uninstall /quiet" />
+
+		</package>
+
+	</packages:packages>
