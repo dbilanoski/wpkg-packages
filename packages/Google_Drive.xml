@@ -1,0 +1,48 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package 
+		id="google-drive"
+		name="Google Drive for Desktop"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="31">
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="76.0.3.0" />
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Google Drive" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='%SOFTWARE%\GoogleDrive\GoogleDriveSetup.exe --silent' />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="remove" />
+		<downgrade include="upgrade" />
+
+		<!-- REMOVE -->
+		<!-- End current related processes -->
+		<install cmd='%COMSPEC% /c TASKKILL /F /IM GoogleDriveFS.exe /t' >
+			<exit code="any" />
+		</install>
+
+		<!-- 
+			# Uninstall current version
+			How it works?
+			1. It runs powershell to extract the registry entry for the Google Drive application and stores it's uninstall path value to the $path variable.
+			2. It then chains the Start-Process command and uses that path value with needed arguments to trigger the appropriate uninstaller.
+			
+			Reason for this is that auto-update feature is allowed and each version creates new folder with new uninstaller so this way we allways target the current one.
+		-->
+		<remove cmd='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -Command "$path = (Get-ItemProperty &apos;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*&apos; | Where-Object DisplayName -eq &apos;Google Drive&apos;).uninstallString; Start-Process $path -ArgumentList &apos;--silent --force_stop&apos;"' />
+	
+	</package>
+
+</packages:packages>
