@@ -35,13 +35,14 @@
 
 		<!-- 
 			# Uninstall current version
+
 			How it works?
-			1. It runs powershell to extract the registry entry for the Google Drive application and stores it's uninstall path value to the $path variable.
-			2. It then chains the Start-Process command and uses that path value with needed arguments to trigger the appropriate uninstaller.
+			1. It runs powershell to extract the registry entry for the Google Drive application and stores it's uninstaller path value to the $path variable.
+			2. It then chains the Start-Process command with that path value and needed arguments to trigger the appropriate uninstaller.
 			
-			Reason for this is that auto-update feature is allowed and each version creates new folder with new uninstaller so this way we allways target the current one.
+			Reason for this is that auto-update is allowed and each version creates new folder with new uninstaller so this way we allways get the current one.
 		-->
-		<remove cmd='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -Command "$path = (Get-ItemProperty &apos;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*&apos; | Where-Object DisplayName -eq &apos;Google Drive&apos;).uninstallString; Start-Process $path -ArgumentList &apos;--silent --force_stop&apos;"' />
+		<remove cmd='C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -Command "$path = (Get-ItemProperty &apos;HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\*&apos; | Where-Object DisplayName -eq &apos;Google Drive&apos;).uninstallString; Start-Process $path -Wait -ArgumentList &apos;--silent --force_stop&apos;"' />
 	
 	</package>
 
