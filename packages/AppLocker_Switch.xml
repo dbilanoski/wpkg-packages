@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package
+		id="app-locker"
+		name="AppLocker Defaults Revert"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="99">
+
+		<!-- 
+			# NOTES
+
+			This returns AppLocker feature to automatic start and is used in case and in conjuction to other wpkg package which had to disable AppLocker feature.
+			Some packages might need it disabled (such as Symantec Endpoint Protencion in some edge cases due to issues with Application Identity Services and related drivers).
+			Logic is that in case some package disables it, this one will run afterwards and enable it.
+
+			# USAGE
+			At the moment, installation logic here is validated upon successful installation of SEP 14.3 RU7 (SEP_VERSION variable) which will make sure it's executed after installation of the app. 
+			To hook it to different app, change the variable and second <check> inside the install node accordingly.
+		 -->
+
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="1.0.0" />
+		<variable name="SEP_VERSION" value="14.3.9689.7000" />
+		<variable name="INSTALL_ARGS" value="Set-ItemProperty -path 'HKLM:SYSTEM\CurrentControlSet\Services\AppID' -Name 'Start' -Value 3" />
+
+		<!-- VALIDATION -->
+		<check type="file" condition="exists" path="C:\Program Files\AppLocker_%SYS_VERSION%.txt" />
+
+		<!-- INSTALLATION -->
+		<!-- In case AppLocker is disabled and SEP is already installed, enable AppLocker -->
+		<install cmd='%COMSPEC% /C C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -command "%INSTALL_ARGS%"'>
+			<condition>
+					<check type="logical" condition="and">
+               <check type="registry" condition="equals" path="HKLM\SYSTEM\CurrentControlSet\Services\AppID\Start" value="4" />
+               <check type="uninstall" condition="versiongreaterorequal" path="Symantec Endpoint Protection" value="%SEP_VERSION%" />
+          </check>
+			</condition>
+		</install>
+
+		<!-- Write validation -->
+		<install cmd='%COMSPEC% /C echo DO NOT DELETE - AppLocker Config Distributed Via WPKG Validation > "C:\Program Files\AppLocker_%SYS_VERSION%.txt"' >
+			<condition>
+							<check type="registry" condition="equals" path="HKLM\SYSTEM\CurrentControlSet\Services\AppID\Start" value="3" />
+			</condition>
+		</install>
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->
+		<remove cmd='%COMSPEC% /C DEL /Q "C:\Program Files\AppLocker_*.txt"' />
+		
+	</package>
+</packages:packages>

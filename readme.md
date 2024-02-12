@@ -102,6 +102,7 @@ Always have your priorities sorted in the desired sequence to achive order which
 ## References
 
 * [WPKG Wiki page](https://wpkg.org/Main_Page)
+* [WPKG Silent Installers](https://wpkg.org/Category:Silent_Installers)
 * [Good XML Validator](https://www.liquid-technologies.com/online-xml-validator)
 * [About REGEX Syntax](https://docs.microsoft.com/en-us/previous-versions/1400241x(v=vs.100)?redirectedfrom=MSDN)
 * [About REGEX Syntax 2](https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference?redirectedfrom=MSDN)
@@ -115,14 +116,6 @@ Always use debugging to check the procedural execution of your setup.
   \\your-path-to-wpkg.js\wpkg.js /synchronize /debug > C:\wpkg-log.txt
   
   ```
-
-## Authors
-
-[Danilo Bilanoski](mailto:danilo.bilanoski@gmail.com)
-
-## Acknowledgments
-
-* [WPKG Silent Installers](https://wpkg.org/Category:Silent_Installers)
 
 ## ToDo
 - [x] Initial draft, readme file
