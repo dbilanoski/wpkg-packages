@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<packages:packages
+	xmlns:packages="http://www.wpkg.org/packages" xmlns:wpkg="http://www.wpkg.org/wpkg" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.wpkg.org/packages ../xsd/packages.xsd" >
+
+	<package id="zcc"
+		name="Zscaler Cilent Connector"
+		revision="%SYS_VERSION%"
+		reboot="false"
+		priority="5">
+
+		<!-- 
+			NOTES
+				* Display verison in registry differs from shown version under "Programs and features" due to two entries were written with same name.
+					* 0.0.16308
+					* 4.3.0.151 * correct one, shown in the Programs and features
+				* Uninstall, when calling existing .exe uninstaller, relies on configured env variable for the password
+					* More on that here https://help.zscaler.com/client-connector/uninstalling-zscaler-client-connector
+					* MSI works as expected
+		 -->
+
+		<!-- CONFIGURATION VARIABLES -->
+		<variable name="SYS_VERSION" value="4.3.0.151" />
+		<variable name="UNINSTALL_STRING" value="{369C3598-4FDF-443B-A2BC-505E10E15CB3}" />
+		<variable name="ZCC_UNINSTALL_PWD" value="your-password" />
+		<variable name="ZCC_DOMAIN" value="your-domain" />
+		<variable name="ZCC_POLICY_TOKEN" value="your-token" />
+
+
+		<!-- VALIDATION -->
+		<check type="uninstall" condition="versiongreaterorequal" path="Zscaler" value="%SYS_VERSION%" />
+
+		<!-- INSTALLATION -->
+		<install cmd='msiexec /i "%SOFTWARE%\ZCC\Zscaler-windows-4.3.0.151-installer-x64.msi" /quiet STRICTENFORCEMENT=1 CLOUDNAME=zscloud USERDOMAIN=%ZCC_DOMAIN% POLICYTOKEN=%ZCC_POLICY_TOKEN%' />
+
+		<!-- UPGRADE -->
+		<upgrade include="install" />
+
+		<!-- DOWNGRADE -->	
+		<downgrade include="remove" />
+		<downgrade include="install" />
+
+		<!-- DEINSTALLATION -->	
+		<remove cmd='msiexec /X%UNINSTALL_STRING% /quiet UNINSTALL_PASSWORD=%ZCC_UNINSTALL_PWD%' /> 
+		<!-- Wait 15 seconds to allow removal to complete before wpkg checks for validation -->
+		<remove cmd='%COMSPEC% /C ping 127.0.0.1 -n 15 > nul' /> 
+
+	</package>
+
+</packages:packages>
