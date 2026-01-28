@@ -1,103 +1,175 @@
 # WPKG Silent Installers & Software Package Scripts
 
-Short collection of wpkg package scripts for various software untattended installations used in professional production environment. Internal logic of packages aims to optimize bandwith consuption in mixed environment where users are connecting both from RA VPNs and from on-site networks so there will be examples which are using different download options.
+A curated collection of **WPKG package definitions and helper scripts** used for unattended software deployment in a professional production environment.
 
-## About packages
+These packages were designed and used at scale, with a strong focus on **reliability**, **bandwidth efficiency**, and **zero-impact deployments** across mixed connectivity scenarios (on-site networks and remote-access VPN users).
 
-Packages are structured as separate files per software and written following these points:
-* Variables are used whenever practical (versions, installations switches, product uninstallation keys, download links etc.)
-* SOFTWARE variable is defined on the server side
-* Client IP address will be checked first to differentiate vpn users from on-site users
+---
 
-Some packages will have custom validators for "installed" state check. Those are scripts and similar things pushed occassionaly, such as activation of BitLocker or executing one-time batch scripts.
+## Purpose & design goals
 
-Some packages will have underlying batch scripts either as checks or as means of installations. In those cases, batch file will be included as a separate file showing script logic.
+This repository reflects real-world deployment challenges rather than lab-perfect scenarios.  
+Key design goals include:
 
-Some packages will have custom installation logic for various reasons - pay attention to in-package comments.
+- Unattended, repeatable software installations
+- Optimized bandwidth usage for remote users
+- Clear versioning and revision control
+- Minimal disruption to production environments
+- Explicit, readable logic over hidden or “magic” behavior
 
-### **Note about IP Address provided as a WPKG host attribute**
-This one will pull data from registry "HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\" based on the "Network services" found under "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards\". With this, you will get an array of used addresses, often containing last known ip addresses on all available adapters regardless of their current usage and status. Since the array will contain addresses which are currently not in use, this host attribute is not reliable for usage.
+Several packages include conditional logic to differentiate **on-site vs. off-site installations**, ensuring the most efficient installation path is used in each case.
 
-Alternatively, use following Powershell script:
+---
 
+## Package structure & conventions
+
+Packages are structured as **one file per application**, following consistent conventions:
+
+- Variables are used wherever practical:
+  - Versions
+  - Installation switches
+  - Uninstall strings
+  - Download URLs and targets
+- `SOFTWARE` variable is defined server-side (WPKG configuration)
+- Client IP detection is performed early to distinguish VPN users from on-site machines
+- Custom validators are used where a simple MSI check is insufficient
+
+Some packages include:
+- External batch or PowerShell scripts (included in the repo)
+- One-time execution logic (e.g. BitLocker enablement, post-install actions)
+- Custom install or validation logic explained directly in package comments
+
+When something deviates from the “standard” flow, it’s intentional — and documented.
+
+---
+
+## On-site vs off-site detection (important note)
+
+### ⚠️ About IP address as a WPKG host attribute
+
+Using the registry-based approach:
+
+`HKLM\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters\Interfaces\`
+
+in combination with:
+
+`HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards\`
+often results in **arrays of historical IP addresses**, including inactive adapters. Because of this, registry-based IP detection is **not reliable** for determining current network location.
+
+This approach was tested in production and discarded due to inconsistent results.
+
+### Recommended approach: PowerShell-based IP validation
+
+The following PowerShell script detects whether a machine is currently connected to an internal network based on its active IPv4 address.
+
+Example:
+- Internal network: `10.10.0.0/16`
+- Exit code `500` → on-site
+- Exit code `501` → off-site
+
+```powershell
+$ips = (Get-NetIPConfiguration |
+  Where-Object {
+    $_.IPv4DefaultGateway -ne $null -and
+    $_.NetAdapter.Status -ne "Disconnected"
+  }).IPv4Address.IPAddress
+
+$pattern = "^10\.10\.[0-9]{1,3}\.[0-9]+$"
+
+if ($ips -match $pattern) {
+  exit 500
+} else {
+  exit 501
+}
 ```
-# -- Notes --
-# This uses regex patterning to catch desired on-site ip address while avoiding RAVPNS.
-# Example network will be 10.10.0.0/16 - Please adjust $pattern variable to match your internal supernet
-# Exit code 500 means machine is on internal network, 501 means its not
+Used as a condition in WPKG:
 
-$ips = (Get-NetIPConfiguration | Where-Object {$_.IPv4DefaultGateway -ne $null -and $_.NetAdapter.status -ne "Disconnected"}).ipv4address.ipaddress
-$pattern = "^10\.10\.[0-9]?[0-9]?[0-9]\.[0-9]+$"
-
-if ($ips -match $pattern) {EXIT 500} else {EXIT 501}
-```
-
-as a condition provided under the wpkg install tag, such as in a dummy example below.
-
-```
-<!- On-site installation case -->
-<install cmd="msiexec /i /switches %SOFTWARE%\application-folder\application-name.msi>
+```xml
+<!-- On-site installation -->
+<install cmd="msiexec /i /switches %SOFTWARE%\app\app.msi">
   <condition>
-    <check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File \\path-to-your-script\ip_validator.ps1" condition="exitcodeequalto" value="500" />
+    <check type="execute"
+           path="powershell.exe -executionpolicy bypass -File \\path\ip_validator.ps1"
+           condition="exitcodeequalto"
+           value="500" />
   </condition>
 </install>
 
-<!- Off-site installation case -->
-<install cmd="msiexec /i /switches %DL_TARGET%\previouslly-downloaded-application-name.msi>
+<!-- Off-site installation -->
+<install cmd="msiexec /i /switches %DL_TARGET%\app.msi">
   <condition>
-    <check type="execute" path="C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -executionpolicy bypass -File \\path-to-your-script\ip_validator.ps1" condition="exitcodeequalto" value="501" />
+    <check type="execute"
+           path="powershell.exe -executionpolicy bypass -File \\path\ip_validator.ps1"
+           condition="exitcodeequalto"
+           value="501" />
   </condition>
 </install>
 
 ```
-## Getting Started
 
-### Package configuration
-#### Variables
+## Variables & configuration
 
-* PKG_VERSION - version of the program (one showed as a version value of the exe file).  
-* SYS_VERSION - version of the program (one showed as a value of the uninstall string)
-    * If PKG_VERSION is used, this one will usually be shown as equal to PKG_VERSION as most of the time both are same
-    * In some cases, system version might have additional numbers on top ov the PKG_VERSION which is handled in usage as below:
-    ```
+Commonly used variables include:
+
+- `PKG_VERSION` – application version
+- `SYS_VERSION` – system / uninstall version (used as revision trigger)
+  - Can extend `PKG_VERSION` if needed:
+    ```xml
     <variable name="PKG_VERSION" value="6.4.6" />
-	  <variable name="SYS_VERSION" value="%PKG_VERSION%.2" />
-    <!-- This will give SYS_VERSION value ov 6.4.6.2 -->
+    <variable name="SYS_VERSION" value="%PKG_VERSION%.2" />
     ```
-    * Used as a revision number
+- `UNINSTALL_STRING` – uninstall command (if applicable)
+- `DL_SOURCE_(1..9)` – download URLs
+- `DL_TARGET_(1..9)` – download targets
+  - Stored in `%TEMP%` by default
+  - Subfolders are supported (e.g. `appname\installer.exe`)
+- `INSTALL_ARGS` – installer command-line switches
+- `PS_SCRIPT` / `*_SCRIPT` – external PowerShell helper scripts
+- `IP_SITE_SUPERNET` – internal network supernet (e.g. `10.10.0.0`)
 
-* UNINSTALL_STRING - uninstall string of an msi package (if used)
-* DL_SOURCE_ (1..9) - Download links (if used)
-* DL_TARGET_ (1..9) - name of the files we are downloading from DL_LINK(1-9)
-  * These are by default stored in %TEMP% and later deleted
-  * You can add folders to the path (eg. TARG_STRING1 value ="appname\app.exe", this will download file to %TEMP%\appname\app.exe)
-* INSTALL_ARGS - Installation command line arguments (switches) (if used)
-* PS_SCRIPT - Path to the PowerShell with arugments for bypassing the Execution Policy and calling external ps1 file intened to ease the usage of external powershell scripts (if used)
-* *_SCRIPT - Any kind of external PowerShell script used as a tool
-* IP_SITE_SUPERNET - Your supernet ipv4 address (eg. 10.191.0.0)
-  * Usualy this is used by external script to validate the computer ip address
+### Revision handling
 
-#### Revision
-SYS_VERSION variable is used as a revision. This way, change in the software version variable triggers the appropriate installation action.
+`SYS_VERSION` acts as the revision trigger.  
+Updating this value forces re-evaluation and reinstallation when appropriate.
 
-#### Priorities
-* 90-100, prioritized software.
-* 50-90, software with no specific priority.
-* 1-10, installers which are triggering reboots.
-* Default: 30.
+---
 
-Always have your priorities sorted in the desired sequence to achive order which is practical to your application. Advice is to have application which requires a reboot with lowest priority. 
+## Package priorities
 
-### Usage
+Recommended priority ranges:
 
-* Clone repo and copy desired packages folder content to your wpkg.js folder\packages
-  ```
-  git clone https://github.com/dbilanoski/wpkg-packages.git
-  ```
-* Adjust installation paths and variables in packages to your situation.
+- **90–100** – critical or prioritized software
+- **50–90** – standard software
+- **1–10** – installers that trigger reboots
+- **Default** – 30
 
-### Writing new packages
-* Use templates from the .\Template folder as a starting point.
+Reboot-requiring packages should generally have the **lowest priority** to avoid unnecessary interruptions.
+
+---
+
+## Getting started
+
+Clone the repository and copy required packages into your WPKG setup:
+
+```bash
+git clone https://github.com/dbilanoski/wpkg-packages.git
+```
+Adjust installation paths, variables, and scripts to match your environment.
+
+## Writing new packages
+
+- Use templates from the `Template` directory as a starting point
+- Follow existing variable naming and structural conventions
+- Document any non-obvious or custom logic directly inside the package file
+
+## Debugging & troubleshooting
+
+Always validate procedural execution using debug output:
+```bash
+\\path-to-wpkg.js\wpkg.js /synchronize /debug > C:\wpkg-log.txt
+
+```
+Redirecting output to a text file makes analysis significantly easier.
 
 ## References
 
@@ -107,17 +179,5 @@ Always have your priorities sorted in the desired sequence to achive order which
 * [About REGEX Syntax](https://docs.microsoft.com/en-us/previous-versions/1400241x(v=vs.100)?redirectedfrom=MSDN)
 * [About REGEX Syntax 2](https://docs.microsoft.com/en-us/dotnet/standard/base-types/regular-expression-language-quick-reference?redirectedfrom=MSDN)
 
-## Help
 
-Always use debugging to check the procedural execution of your setup.
-* Best to have a debug script ready on your server.
-* Best to have it directed to a textual file for readability.
-  ```
-  \\your-path-to-wpkg.js\wpkg.js /synchronize /debug > C:\wpkg-log.txt
-  
-  ```
-
-## ToDo
-- [x] Initial draft, readme file
-- [x] Templates for MSI and EXE both with and without IP validation
-- [x] Revise existing packages
+This repository reflects real operational patterns rather than generic examples. If you’re running WPKG in a mixed on-site / remote environment, you may find these patterns directly reusable.
