@@ -39,7 +39,7 @@ Some packages include:
 - One-time execution logic (e.g. BitLocker enablement, post-install actions)
 - Custom install or validation logic explained directly in package comments
 
-When something deviates from the “standard” flow, it’s intentional — and documented.
+When something deviates from the "standard" flow, it should be documented.
 
 ---
 
@@ -54,6 +54,7 @@ Using the registry-based approach:
 in combination with:
 
 `HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\NetworkCards\`
+
 often results in **arrays of historical IP addresses**, including inactive adapters. Because of this, registry-based IP detection is **not reliable** for determining current network location.
 
 This approach was tested in production and discarded due to inconsistent results.
@@ -143,7 +144,7 @@ Recommended priority ranges:
 - **1–10** – installers that trigger reboots
 - **Default** – 30
 
-Reboot-requiring packages should generally have the **lowest priority** to avoid unnecessary interruptions.
+Reboot-requiring packages should generally have the **lowest priority** aiming for a reboot at the finish (no interuptions).
 
 ---
 
